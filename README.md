@@ -6,6 +6,7 @@ The base code is available in the folder bridge_sampling. Pipelines for all expe
 
 Data needed for running this code is publicly available on dryad: https://datadryad.org/dataset/doi:10.5061/dryad.2jm63xsq6 . 
 
+## Citation 
 Please cite this work as follows:  
 
 ```bibtex
@@ -16,3 +17,15 @@ Please cite this work as follows:
       url={},
 }
 ```
+
+## Running the code 
+
+Please create a virtual environment and install all packages listed in requirements.txt. One way to do this is running the following in the commandline 
+
+```bash
+python3 -m venv env
+source env/bin/activate
+pip install -r requirements.txt
+```
+
+Once you have installed all the packages that are needed you should be able to run all the code in this repository. 
