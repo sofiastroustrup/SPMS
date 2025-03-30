@@ -10,7 +10,7 @@ Please cite this work as follows
 
 @misc{stroustrup2025,
       title={Stochastic Phylogenetic Models of Shape [unpublished manuscript]},
-      author={},
+      author={Sofia Stroustrup, Morten Akhøj, Frank van der Meulen, Stefan Sommer, Rasmus Nielsen},
       year={2025},
       url={},
 }
