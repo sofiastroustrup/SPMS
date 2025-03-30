@@ -1,3 +1,15 @@
+#wand folders
+wandb
+
+# only share generic trees 
+data/chazot*
+data/forewing_data_male.csv
+data/Morpho_forewing_procCoor.txt
+data/hercules_forewing_n=20.csv
+
+# folders and files starting with underscore
+_* 
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
