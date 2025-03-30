@@ -8,9 +8,11 @@ Data needed for running this code is publicly available on dryad: https://datadr
 
 Please cite this work as follows 
 
+```bibtex
 @misc{stroustrup2025,
       title={Stochastic Phylogenetic Models of Shape [unpublished manuscript]},
       author={Sofia Stroustrup, Morten Akhøj, Frank van der Meulen, Stefan Sommer, Rasmus Nielsen},
       year={2025},
       url={},
 }
+```
