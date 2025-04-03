@@ -83,7 +83,7 @@ def plot_posterior(flat_trees, inneridx, outpath, flat_true_tree=False, sample_n
             true_innernode = flat_true_tree[idx,:]
             tinode = np.concatenate((true_innernode, true_innernode[0:2]))  
             axes[i].plot(tinode[::2], tinode[1::2], '--.', color='black', label='True shape')
-        axes[i].set_title(f'Node {idx}', size=10);
+        axes[i].set_title(f'Node {idx}', size=20);
 
     # Hide any unused subplots
     for j in range(n_nodes, grid_size * grid_size):
