@@ -1,8 +1,8 @@
 library(geomorph)
-library(tidyverse)
+library(here)
 
 
-sim <- read_csv("simdata/leaves.csv", col_names=TRUE)
+sim <- read.table(here("experiments/comparison/simdata/leaves.csv"), header=TRUE)
 print(sim)
 
 # reshape to match geomorph: n_landmarks x dim x species 

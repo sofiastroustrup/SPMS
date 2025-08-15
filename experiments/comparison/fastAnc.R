@@ -1,5 +1,4 @@
 # Do ancestral reconstruction using phytools 
-library(phytools)
 library(tidyverse)
 library(geomorph)
 library(ape)
