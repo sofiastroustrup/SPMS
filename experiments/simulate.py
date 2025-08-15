@@ -13,7 +13,7 @@ from bridge_sampling.helper_functions import get_flat_values_sim
 from bridge_sampling.simulate import simulate_tree
 
 
-def simulate_shapes(ds, dt, sigma, alpha, root, tree, rb, d=2, outputfolder='', sti=1):
+def simulate_shapes(ds, dt, sigma, alpha, root, tree, rb=0, d=2, outputfolder='', sti=1):
     '''
     Function to simulate shapes
     
@@ -71,10 +71,10 @@ def simulate_shapes(ds, dt, sigma, alpha, root, tree, rb, d=2, outputfolder='', 
         node.add_feature('message', None)
         node.dist = node.T
     if rb==0:
-        key, *subkeys = jax.random.split(key, len(bphylogeny_sim.children)+1)
+        key, *subkeys = jax.random.split(key, len(tree.children)+1)
         _dts = jnp.array([0]); _dWs = jnp.array([0]); Xscirc = root.reshape(1,-1) # set variables for root 
         children = [tree.children[0],tree.children[1]]
-        dWs_children = [dtsdWsT(bphylogeny_sim.children[i],subkeys[i], lambda ckey, _dts: dWs(n*d,ckey, _dts)) for i in range(len(bphylogeny_sim.children))]
+        dWs_children = [dtsdWsT(tree.children[i],subkeys[i], lambda ckey, _dts: dWs(n*d,ckey, _dts)) for i in range(len(tree.children))]
         stree = [_dts, _dWs, Xscirc, [simulate_tree(Xscirc[-1], b, sigma, theta_true, dtsdWs_child) for dtsdWs_child in dWs_children]]
     else:
         stree = simulate_tree(root, b, sigma, theta_true, dtsdWsT(tree,subkey, lambda ckey, _dts: dWs(n*d,ckey, _dts)))
