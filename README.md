@@ -20,12 +20,10 @@ Please cite this work as follows:
 
 ## Running the code 
 
-Please create a virtual environment and install all packages listed in requirements.txt. One way to do this is running the following in the commandline 
+First install jax. Then run 
 
-```bash
-python3 -m venv env
-source env/bin/activate
-pip install -r requirements.txt
+```commandline
+pip install -e . 
 ```
 
-Once you have installed all the packages that are needed you should be able to run all the code in this repository. 
+Please create a virtual environment and install all packages listed in requirements.txt. One way to do this is running the following in the commandline 

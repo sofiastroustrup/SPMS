@@ -4,7 +4,7 @@ import jax
 import jax.numpy as jnp
 from .setup_SDEs import dWs
 import numpy as np
-import matplotlib
+#import matplotlib
 
 def mirrored_gaussian(key, mu, sd, a=0, b=1):
     key, subkey = jax.random.split(key, 2)
