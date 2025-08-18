@@ -33,7 +33,8 @@ def backward_filter(node, theta, sigma):
         F_T = jnp.sum(jnp.array([child.message['F'][0] for child in children]),0)
         H_T = jnp.sum(jnp.array([child.message['H'][0] for child in children]),0)
         #c_T = jnp.sum(jnp.array([child.message['c'](0.,theta) for child in children]),0) 
-        Mdagger = C =  jnp.linalg.inv(H_T) # use solve instead?
+        #Mdagger = C =  jnp.linalg.inv(H_T) # use solve instead?
+        Mdagger = jnp.linalg.inv(H_T) # removed C, I dont think we use this 
         v = jnp.linalg.solve(H_T, F_T)#jnp.dot(Mdagger,F_T) 
         subtree_var = 1./jnp.sum(jnp.array([1./(child.T+child.message['subtree_var']) for child in children]),0)
         tildea = Mdagger/subtree_var
