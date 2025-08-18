@@ -3,13 +3,13 @@ import numpy as np
 from ete3 import Tree
 import jax
 import jax.numpy as jnp
-import argparse
+#import argparse
 import sys 
-import subprocess
+#import subprocess
 
 from bridge_sampling.setup_SDEs import Stratonovich_to_Ito, dtsdWsT, dWs
 from bridge_sampling.noise_kernel import Q12
-from bridge_sampling.helper_functions import get_flat_values_sim
+#from bridge_sampling.helper_functions import get_flat_values_sim
 from bridge_sampling.simulate import simulate_tree
 
 
@@ -64,16 +64,20 @@ def simulate_shapes(ds, dt, sigma, alpha, root, tree, rb=0, d=2, outputfolder=''
     # simulate data 
     key = jax.random.PRNGKey(ds)
     key, subkey = jax.random.split(key)
-    tree.dist = rb
+    #tree.dist = rb
     for node in tree.traverse("levelorder"): 
-        node.add_feature('T', round(node.dist,1)) # this is a choice for simulation, could be different
-        node.add_feature('n_steps', round(node.T/dt))
+        #node.add_feature('T', round(node.dist,1)) # this is a choice for simulation, could be different
+        if not abs(round(node.dist/dt) - node.dist/dt) < 1e-10:
+            print(f"Node distance must be divisible by dt, got {node.dist}")
+            sys.exit(1)
+        node.add_feature('n_steps', round(node.dist/dt))
         node.add_feature('message', None)
-        node.dist = node.T
+        node.T = node.dist
+        #node.dist = node.T
     if rb==0:
         key, *subkeys = jax.random.split(key, len(tree.children)+1)
         _dts = jnp.array([0]); _dWs = jnp.array([0]); Xscirc = root.reshape(1,-1) # set variables for root 
-        children = [tree.children[0],tree.children[1]]
+        #children = [tree.children[0],tree.children[1]]
         dWs_children = [dtsdWsT(tree.children[i],subkeys[i], lambda ckey, _dts: dWs(n*d,ckey, _dts)) for i in range(len(tree.children))]
         stree = [_dts, _dWs, Xscirc, [simulate_tree(Xscirc[-1], b, sigma, theta_true, dtsdWs_child) for dtsdWs_child in dWs_children]]
     else:
