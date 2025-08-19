@@ -64,8 +64,6 @@ def get_flat_values(tree):
 #        gtheta = jax.random.uniform(subkeys[1], minval = gtheta_loc, maxval = gtheta_loc+gtheta_scale)
 #    return(kalpha, gtheta)
     
-
-
 #def folded_gaussian(key, mu, sd):
 #    key, subkey = jax.random.split(key, 2)
 #    x = mu + sd*jax.random.normal(subkey) 

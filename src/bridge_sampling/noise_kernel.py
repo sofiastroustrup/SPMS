@@ -15,11 +15,3 @@ Q12 = lambda q,theta: jnp.einsum('ij,kl->ikjl',kQ12_q(q,q,theta),jnp.eye(2)).res
 def Q(q,theta):
     Q12qtheta = Q12(q,theta)
     return jnp.einsum('ij,kj->ik',Q12qtheta,Q12qtheta)
-
-# fast evaluation of Q at endpoint
-#Qv = lambda theta: Q(theta['v'],theta) if theta['Qv'] is None else theta['Qv']
-#invQv = lambda theta: jnp.linalg.inv(Q(theta['v'],theta)) if theta['invQv'] is None else theta['invQv']
-
-#Qv = lambda theta: Q(theta['v'],theta) 
-#invQv = lambda theta: jnp.linalg.inv(Q(theta['v'],theta)) 
-# %%

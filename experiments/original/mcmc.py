@@ -263,10 +263,10 @@ for j in tqdm(range(N)):
         acceptpathall.append(0)
         tree_counter[-1]+=1    
     # log
-    inner = dict([(str(i),guided_tree[2][i]) for i in range(2)])
-    tolog = dict([('root-'+str(l),guided_tree[0][l]) for l in range(2)])
-    tolog.update(inner)
-    wandb.log(tolog)
+    #inner = dict([(str(i),guided_tree[2][i]) for i in range(2)])
+    #tolog = dict([('root-'+str(l),guided_tree[0][l]) for l in range(2)])
+    #tolog.update(inner)
+    #wandb.log(tolog)
 
 
     #######################
