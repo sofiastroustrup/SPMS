@@ -5,7 +5,7 @@ library(stringr)
 library(reticulate)
 n = 20 
 d = 2
-folder ="seed=4024352252_sigma=0.6_alpha=0.15_dt=0.05"#"seed=4098652401_sigma=0.3_alpha=0.1_dt=0.01" #"seed=1259603298_sigma=0.5_alpha=0.1_dt=0.05"
+folder ="seed=3037230021_sigma=0.9_alpha=0.02_dt=0.05"#"seed=4098652401_sigma=0.3_alpha=0.1_dt=0.01" #"seed=1259603298_sigma=0.5_alpha=0.1_dt=0.05"
 sim <- read_csv(here(paste0("experiments/comparison/", folder, "/leaves.csv")), col_names=TRUE)
 print(dim(sim))
 
