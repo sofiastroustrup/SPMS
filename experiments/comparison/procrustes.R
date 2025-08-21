@@ -2,29 +2,37 @@ library(geomorph)
 library(tidyverse)
 library(here)
 library(stringr)
-
-sim <- read_csv(here("SPMS/experiments/comparison/simdata/leaves.csv"), col_names=TRUE)
-print(sim)
+library(reticulate)
+n = 20 
+d = 2
+folder ="seed=4024352252_sigma=0.6_alpha=0.15_dt=0.05"#"seed=4098652401_sigma=0.3_alpha=0.1_dt=0.01" #"seed=1259603298_sigma=0.5_alpha=0.1_dt=0.05"
+sim <- read_csv(here(paste0("experiments/comparison/", folder, "/leaves.csv")), col_names=TRUE)
+print(dim(sim))
 
 # reshape simulated data to fit with geomorph 
 sim_mat <- as.matrix(sim[,-1])
 reshaped_sim <- sapply(lapply(1:5, function(ii) {
-  matrix(sim[ii,-1], byrow = TRUE, nrow = 20, ncol = 2)
+  matrix(sim[ii,-1], byrow = TRUE, nrow = n, ncol = d)
 }), identity, simplify = "array")
 print(reshaped_sim)
 
 # test 
-test <- array(unlist(reshaped_sim), dim=c(20,2,5))
+test <- array(unlist(reshaped_sim), dim=c(n,d,5))
 
 # Procrustes align data and export 
 proc <- gpagen(test, Proj=FALSE)
 
-proc_rotated <- fixed.angle(proc, angle=45)#rotate.coords(proc, type="flipY")
-plot(proc_rotated)
-
+#proc_rotated <- fixed.angle(proc, angle=45)#rotate.coords(proc, type="flipY")
+pdf(here(paste0("experiments/comparison/", folder, "/procrustes_plot.pdf")),
+    width = 10, height = 8)
+plot(proc)
+dev.off()
+# export procrustes aligned and rotated data 
+proc_final <- array_reshape(aperm(proc$coords, c(3, 1, 2)), c(5, n*d))
+write.table(proc_final, file=here(paste0("experiments/comparison/", folder, "/procrustes_aligned.csv")), row.names=FALSE, col.names=FALSE, sep=",")
 
 # Rotate landmarks by 45 degrees
-rotate_landmarks <- function(coords, angle_degrees) {
+'''rotate_landmarks <- function(coords, angle_degrees) {
   # Convert degrees to radians
   angle_rad <- angle_degrees * pi / 180
   
@@ -61,10 +69,5 @@ plot(proc_45deg)
 
 # export procrustes aligned and rotated data 
 proc_final <- array_reshape(aperm(proc_45deg$coords, c(3, 1, 2)), c(5, 40))
-write.table(proc_final, file=here("SPMS/experiments/comparison/simdata/procrustes_aligned_rotated.csv"), row.names=FALSE, col.names=FALSE, sep=",")
-
-
-# use geomorph for ancestral state reconstruction 
-
-# load phylogenetic tree
-# set names of dimenions
+#write.table(proc_final, file=here(paste0("experiments/comparison/", folder, "/procrustes_aligned_rotated.csv")), row.names=FALSE, col.names=FALSE, sep=",")
+'''

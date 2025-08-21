@@ -6,8 +6,9 @@ library(here)
 library(phytools)
 
 # load simulated data set 
-simdata <- read_csv(here("SPMS/experiments/comparison/simdata/procrustes_aligned_rotated.csv"), col_names=FALSE)%>% t()
-tree <- read.tree(here("SPMS/experiments/data/chazot_subtree.nw"))
+folder =  "seed=4024352252_sigma=0.6_alpha=0.15_dt=0.05"#"seed=173203733_sigma=0.6_alpha=0.1_dt=0.05" #"seed=4098652401_sigma=0.3_alpha=0.1_dt=0.01" #"seed=1259603298_sigma=0.5_alpha=0.1_dt=0.05" #"seed=10_sigma=0.5_alpha=0.05_dt=0.05"
+simdata <- read_csv(here(paste0("experiments/comparison/", folder, "/procrustes_aligned.csv")), col_names=FALSE)%>% t()
+tree <- read.tree(here("experiments/data/chazot_subtree.nw"))
 #tree <- read.newick(here("SPMS/experiments/data/chazot_subtree.nw")) 
 tree$tip.label <- c("A", "B", "C", "D", "E") # set names of tips to match simulated data
 colnames(simdata) <- tree$tip.label
@@ -41,11 +42,83 @@ for (i in 1:n_traits) {
   # Store the results in the matrix
   anc_matrix[i,] <- anc_result
 }
-write.csv(anc_matrix, file=here("SPMS/experiments/comparison/simdata/anc_recon.csv"))
+write.csv(anc_matrix, file=here(paste0("experiments/comparison/", folder, "/fastAnc_recon.csv")))
 
 # plot different ancestral states 
-plot(anc_matrix[,2][seq(1, 40, 2)], anc_matrix[,1][seq(2, 40, 2)])
+plot(anc_matrix[,3][seq(1, 40, 2)], anc_matrix[,1][seq(2, 40, 2)])
 
-# plot tree to see which nodes numbers refer to 
-plot(tree)
-nodelabels()  # 
+
+
+# Plot all ancestral states side by side
+
+# Create output directory if it doesn't exist
+output_folder <- here(paste0("experiments/comparison/", folder, "/plots"))
+dir.create(output_folder, showWarnings = FALSE, recursive = TRUE)
+
+# Save the grid of ancestral shape plots to PDF
+pdf(file.path(output_folder, "ancestral_shapes_grid.pdf"), 
+    width = 10, height = 8)  # Adjust width and height as needed
+# First, determine how many nodes we have
+n_nodes <- ncol(anc_matrix)
+node_ids <- colnames(anc_matrix)
+n_landmarks <- nrow(anc_matrix) / 2  # Assuming alternating x,y coordinates
+
+# Set up a plotting grid based on number of nodes
+par(mfrow=c(2, ceiling(n_nodes/2)), mar=c(4, 4, 2, 1))
+
+# Plot each node's shape reconstruction
+for (i in 1:n_nodes) {
+  # Extract x and y coordinates for this node
+  x_coords <- anc_matrix[seq(1, nrow(anc_matrix), 2), i]
+  y_coords <- anc_matrix[seq(2, nrow(anc_matrix), 2), i]
+  
+  # Create the plot
+  plot(x_coords, y_coords, 
+       main=paste("Node", node_ids[i]), 
+       xlab="X", ylab="Y",
+       pch=19, col="blue", 
+       asp=1)  # asp=1 ensures proper shape visualization
+  
+  # Connect points to show the shape outline
+  lines(c(x_coords, x_coords[1]), c(y_coords, y_coords[1]), 
+        col="darkblue", lwd=1.5)
+}
+dev.off()
+
+# Reset the plotting layout
+par(mfrow=c(1,1))
+pdf(file.path(output_folder, "ancestral_shapes.pdf"), 
+    width = 10, height = 8)
+# Create a single plot with all shapes overlaid
+# Use a different color for each node
+colors <- rainbow(n_nodes)
+
+# Create an empty plot with appropriate boundaries
+all_x <- as.vector(anc_matrix[seq(1, nrow(anc_matrix), 2),])
+all_y <- as.vector(anc_matrix[seq(2, nrow(anc_matrix), 2),])
+plot(NULL, xlim=range(all_x), ylim=range(all_y),
+     main="All Ancestral Shapes", 
+     xlab="X coordinate", ylab="Y coordinate", 
+     asp=1)
+
+# Add each node's shape with a different color
+
+for (i in 1:n_nodes) {
+  x_coords <- anc_matrix[seq(1, nrow(anc_matrix), 2), i]
+  y_coords <- anc_matrix[seq(2, nrow(anc_matrix), 2), i]
+  
+  # Add shape with distinct color
+  lines(c(x_coords, x_coords[1]), c(y_coords, y_coords[1]), 
+        col=colors[i], lwd=2)
+  points(x_coords, y_coords, pch=19, col=colors[i], cex=0.8)
+}
+# Add a legend to identify each node
+legend("topright", legend=paste("Node", node_ids), 
+       col=colors, lwd=2, pch=19, cex=0.8)
+dev.off()
+# Also add a reference plot of the tree with node numbers
+plot(tree, main="Phylogenetic Tree with Node IDs")
+nodelabels(bg="white")
+tiplabels(bg="lightblue")
+
+

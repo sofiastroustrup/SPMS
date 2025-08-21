@@ -50,7 +50,7 @@ def get_flat_values(tree):
         if len(children)>0:
             queue.append(children[0])
             queue.append(children[1])
-    return(np.array(values_flat))
+    return(jnp.array(values_flat))
 
 
 

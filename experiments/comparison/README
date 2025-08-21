@@ -9,10 +9,11 @@ example of how one might do this with the simulated examples here could be usefu
 showcasing in the case of simulated examples how costly it is to use methods that are not shape-aware."
 
 Workflow: 
+Plan for ancestral state experiment: 
+- simulate data om small tree + procrustes align
+- estimate ancestral states using mcmc 
+- estimate ancestral states using mvmorph
+- Compare point estimates 
+- Compare samples from inferred model 
+- would be cool to look at the procrustes distance as a function of the parameters used for simulation (but this might be computationally too expensive). We would expect that errors become larger for the non-shape aware model as sigma gets smaller ??
 
-1- Simulate data 
-2- Procrustes align simulated data 
-3- Infer ancestral states using geomorph
-4- Infer ancestral states using our method 
-5- Look at estimates, either MSE og just visually
-6- Compare running times etc 
