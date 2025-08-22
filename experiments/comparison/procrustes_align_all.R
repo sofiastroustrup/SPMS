@@ -12,7 +12,7 @@ d = 2
 p = 5
 
 # Get list of all simulation folders in the comparison directory
-base_dir <- here("experiments/comparison/exp_1_sigma=0.7_alpha=0.025_dt=0.05")
+base_dir <- here("experiments/comparison/exp_1_sigma=0.5_alpha=0.025_dt=0.05")
 sim_folders <- dir_ls(base_dir, type = "directory", regexp = "seed=")
 
 # Loop over all simulation folders
