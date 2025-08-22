@@ -6,7 +6,7 @@ library(here)
 library(phytools)
 
 # load simulated data set 
-folder =  "seed=4024352252_sigma=0.6_alpha=0.15_dt=0.05"#"seed=173203733_sigma=0.6_alpha=0.1_dt=0.05" #"seed=4098652401_sigma=0.3_alpha=0.1_dt=0.01" #"seed=1259603298_sigma=0.5_alpha=0.1_dt=0.05" #"seed=10_sigma=0.5_alpha=0.05_dt=0.05"
+folder =  "exp_1_sigma=0.7_alpha=0.025_dt=0.05/seed=121197884"#"seed=173203733_sigma=0.6_alpha=0.1_dt=0.05" #"seed=4098652401_sigma=0.3_alpha=0.1_dt=0.01" #"seed=1259603298_sigma=0.5_alpha=0.1_dt=0.05" #"seed=10_sigma=0.5_alpha=0.05_dt=0.05"
 simdata <- read_csv(here(paste0("experiments/comparison/", folder, "/procrustes_aligned.csv")), col_names=FALSE)%>% t()
 tree <- read.tree(here("experiments/data/chazot_subtree.nw"))
 #tree <- read.newick(here("SPMS/experiments/data/chazot_subtree.nw")) 
@@ -17,7 +17,7 @@ print(simdata)
 # do ancestral reconstruction
 # fastAnc uses felsensteins pruning algorithm and reroots the tree to get MLE
 # sigma^2 is not needed to estimate the mean
-anc_recon <- fastAnc(tree, simdata[1,], model="BM")
+anc_recon <- fastAnc(tree, simdata[1,], model="BM", CI=TRUE)
 
 
 n_traits <- nrow(simdata)
@@ -26,6 +26,7 @@ n_nodes <- tree$Nnode
 
 # Create empty matrix to store results
 # Columns: internal nodes, Rows: traits
+CI <- list()
 anc_matrix <- matrix(NA, nrow=n_traits, ncol=n_nodes)
 colnames(anc_matrix) <- (n_tips + 1):(n_tips + n_nodes)  # Node IDs
 rownames(anc_matrix) <- paste0("trait", 1:n_traits)      # Trait names
@@ -37,10 +38,11 @@ for (i in 1:n_traits) {
   names(trait_vector) <- tree$tip.label
   
   # Perform ancestral state reconstruction
-  anc_result <- fastAnc(tree, trait_vector, model="BM")
+  anc_result <- fastAnc(tree, trait_vector, model="BM", CI=TRUE)
   
   # Store the results in the matrix
-  anc_matrix[i,] <- anc_result
+  anc_matrix[i,] <- anc_result$ace
+  CI[[i]] <- anc_result$CI  # Store confidence intervals for each trait
 }
 write.csv(anc_matrix, file=here(paste0("experiments/comparison/", folder, "/fastAnc_recon.csv")))
 
