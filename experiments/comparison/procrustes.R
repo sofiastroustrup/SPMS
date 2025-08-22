@@ -1,11 +1,13 @@
 library(geomorph)
-library(tidyverse)
+library(readr)
+library(dplyr)
 library(here)
 library(stringr)
 library(reticulate)
 n = 20 
 d = 2
-folder ="seed=3037230021_sigma=0.9_alpha=0.02_dt=0.05"#"seed=4098652401_sigma=0.3_alpha=0.1_dt=0.01" #"seed=1259603298_sigma=0.5_alpha=0.1_dt=0.05"
+
+folder ="seed=2557803684_sigma=0.7_alpha=0.025_dt=0.05"#"seed=4098652401_sigma=0.3_alpha=0.1_dt=0.01" #"seed=1259603298_sigma=0.5_alpha=0.1_dt=0.05"
 sim <- read_csv(here(paste0("experiments/comparison/", folder, "/leaves.csv")), col_names=TRUE)
 print(dim(sim))
 
@@ -30,6 +32,7 @@ dev.off()
 # export procrustes aligned and rotated data 
 proc_final <- array_reshape(aperm(proc$coords, c(3, 1, 2)), c(5, n*d))
 write.table(proc_final, file=here(paste0("experiments/comparison/", folder, "/procrustes_aligned.csv")), row.names=FALSE, col.names=FALSE, sep=",")
+
 
 # Rotate landmarks by 45 degrees
 '''rotate_landmarks <- function(coords, angle_degrees) {
