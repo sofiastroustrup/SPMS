@@ -6,20 +6,19 @@ library(here)
 library(phytools)
 
 # load simulated data set 
+prepath = "Library/CloudStorage/OneDrive-UniversityofCopenhagen/SPMS"
 folder =  "exp_1_sigma=0.7_alpha=0.025_dt=0.05/seed=121197884"#"seed=173203733_sigma=0.6_alpha=0.1_dt=0.05" #"seed=4098652401_sigma=0.3_alpha=0.1_dt=0.01" #"seed=1259603298_sigma=0.5_alpha=0.1_dt=0.05" #"seed=10_sigma=0.5_alpha=0.05_dt=0.05"
-simdata <- read_csv(here(paste0("experiments/comparison/", folder, "/procrustes_aligned.csv")), col_names=FALSE)%>% t()
-tree <- read.tree(here("experiments/data/chazot_subtree.nw"))
-#tree <- read.newick(here("SPMS/experiments/data/chazot_subtree.nw")) 
+simdata <- read_csv(here(paste0(prepath, "/experiments/comparison/", folder, "/procrustes_aligned.csv")), col_names=FALSE)%>% t()
+tree <- read.tree(here(paste0(prepath, "/experiments/data/chazot_subtree.nw")))
 tree$tip.label <- c("A", "B", "C", "D", "E") # set names of tips to match simulated data
 colnames(simdata) <- tree$tip.label
 print(simdata)
+plot(tree)
 
 # do ancestral reconstruction
 # fastAnc uses felsensteins pruning algorithm and reroots the tree to get MLE
 # sigma^2 is not needed to estimate the mean
-anc_recon <- fastAnc(tree, simdata[1,], model="BM", CI=TRUE)
-
-
+#anc_recon <- fastAnc(tree, simdata[1,], model="BM", CI=TRUE)
 n_traits <- nrow(simdata)
 n_tips <- length(tree$tip.label)
 n_nodes <- tree$Nnode
@@ -39,19 +38,23 @@ for (i in 1:n_traits) {
   
   # Perform ancestral state reconstruction
   anc_result <- fastAnc(tree, trait_vector, model="BM", CI=TRUE)
+  write.csv(anc_result$CI95, col.names=FALSE,file=here(paste0(prepath, "/experiments/comparison/", folder, "/fastAnc/95%_conf_trait",i ,".csv")))
   
   # Store the results in the matrix
   anc_matrix[i,] <- anc_result$ace
-  CI[[i]] <- anc_result$CI  # Store confidence intervals for each trait
+  #CI[[i]] <- anc_result$CI  # Store confidence intervals for each trait
 }
-write.csv(anc_matrix, file=here(paste0("experiments/comparison/", folder, "/fastAnc_recon.csv")))
 
-# plot different ancestral states 
-plot(anc_matrix[,3][seq(1, 40, 2)], anc_matrix[,1][seq(2, 40, 2)])
+# export reconstructed states as csv 
+output_folder <- here(paste0(prepath, "/experiments/comparison/", folder, "/fastAnc"))
+dir.create(output_folder, showWarnings = TRUE, recursive = TRUE)
+write.csv(anc_matrix, file=here(paste0(prepath, "/experiments/comparison/", folder, "/fastAnc/fastAnc_recon.csv")))
 
 
 
+########################################
 # Plot all ancestral states side by side
+########################################
 
 # Create output directory if it doesn't exist
 output_folder <- here(paste0("experiments/comparison/", folder, "/plots"))

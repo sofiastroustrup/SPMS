@@ -293,16 +293,12 @@ def metropolis_hastings(
 
     # Initiate tree
     fge = jax.jit(lambda *x: forward_guide_edge(*x, drift_term, diffusion_term, theta_cur))
-    #fge = lambda *x: forward_guide_edge(*x, drift_term, diffusion_term, theta_cur) #create_forward_guide_edge_jit(drift_term, diffusion_term, theta_cur)
     initialized_tree = forward_guide(xs, data_tree_bf,_dtsdWsT, fge) 
     logpsicur = get_logpsi_jit(initialized_tree)
     logrhotildecur = compute_logrhotilde(data_tree_bf, xs) #-data_tree_bf.message['c']-0.5*xs.T@data_tree_bf.message['H'][0]@xs+data_tree_bf.message['F'][0].T@xs
 
     # results
     guided_tree = get_flat_values(initialized_tree) 
-    #print(guided_tree)
-    #trees = np.expand_dims(guided_tree, axis=0)
-    tree_counter = [1]
 
     # organize logging
     max_trees = 1 + N * 3  # Initial + worst case acceptances
@@ -312,10 +308,10 @@ def metropolis_hastings(
     alphas = np.zeros(N+1); alphas[0] = alpha_cur
     sigmas = np.zeros(N+1); sigmas[0] = sigma_cur
     log_posterior = np.zeros(N)
-    acceptpath = np.zeros(N+1)
-    acceptsigmas = np.zeros(N)
-    acceptalphas = np.zeros(N)
-    acceptpathall = []
+    acceptpath = np.zeros(N+1); acceptpath[0] = 1 # initial path always accepted
+    acceptsigmas = np.zeros(N+1); acceptsigmas[0] = 1 # initial sigma always accepted
+    acceptalphas = np.zeros(N+1); acceptalphas[0] = 1 # initial alpha always accepted
+    #acceptpathall = []
     for j in tqdm(range(N)):
         ##################
         ## Propose path ##
@@ -337,18 +333,17 @@ def metropolis_hastings(
             # update probabilities
             logpsicur = logpsicirc
             # update statistics
-            acceptpath[j] = 1
-            acceptpathall.append(1)
+            acceptpath[j+1] = 1
             # save new paths             
             guided_tree = get_flat_values(guidedcirc) 
             #trees = np.concatenate((trees, np.expand_dims(guided_tree, axis=0)), axis=0)
-            trees[tree_idx] = guided_tree
-            tree_idx += 1
-            tree_counter.append(1)
-        else: 
-            acceptpathall.append(0)
-            tree_counter[-1]+=1   
-        
+            #tree_idx += 1
+            #tree_counter.append(1)
+        #else: 
+        #    acceptpathall.append(0)
+            #tree_counter[-1]+=1   
+        # log 
+        trees[tree_idx] = guided_tree; tree_idx += 1
         # log 
         #log_posterior[j] = logpsicur 
         #inner = dict([(str(i),guided_tree[2][i]) for i in range(2)])
@@ -393,27 +388,20 @@ def metropolis_hastings(
             logpsicur = logpsicirc
 
             # update statistics 
-            acceptsigmas[j] = 1
+            acceptsigmas[j+1] = 1
 
             # save new paths
             guided_tree = get_flat_values(guidedcirc) #used to be get_flat_values_root_branch
             #trees = np.concatenate((trees, np.expand_dims(guided_tree, axis=0)), axis=0)
-            trees[tree_idx] = guided_tree
-            tree_idx += 1
-            tree_counter.append(1)
-
-        else: 
-            tree_counter[-1]+=1  
-
+            #trees[tree_idx] = guided_tree
+           # tree_idx += 1
+           # tree_counter.append(1)
+        #else: 
+            #tree_counter[-1]+=1  
+        #    pass
         # store values 
-        acceptpathall.append(0) # store in order to have path updates and innernode match
+        trees[tree_idx] = guided_tree; tree_idx += 1
         sigmas[j+1] = sigma_cur
-        #inner = dict([(str(i),guided_tree[2][i]) for i in range(2)])
-        #tolog = dict([('root-'+str(l),guided_tree[0][l]) for l in range(2)])
-        #tolog.update(inner)
-        #tolog.update({"sigma": sigma_cur})
-        #wandb.log(tolog) 
-
 
         #######################
         ##   propose kalpha  ##
@@ -454,25 +442,25 @@ def metropolis_hastings(
             logpsicur = logpsicirc 
 
             # update statistics
-            acceptalphas[j] = 1
+            acceptalphas[j+1] = 1
 
             # save new paths
             guided_tree = get_flat_values(guidedcirc)
             #trees = np.concatenate((trees, np.expand_dims(guided_tree, axis=0)), axis=0)
-            trees[tree_idx] = guided_tree
-            tree_idx += 1
-            tree_counter.append(1)
-        else: 
-            tree_counter[-1]+=1
+            #trees[tree_idx] = guided_tree
+            #tree_idx += 1
+            #tree_counter.append(1)
+        #else: 
+            #tree_counter[-1]+=1
         
         # store values 
-        log_posterior[j] = logpsicur + logrhotildecur + prior_alpha.logpdf(alpha_cur) + prior_sigma.logpdf(sigma_cur)
-        acceptpathall.append(0) # store in order to have path updates and innernode match
         alphas[j+1] = alpha_cur
+        trees[tree_idx] = guided_tree; tree_idx += 1
+        log_posterior[j] = logpsicur + logrhotildecur + prior_alpha.logpdf(alpha_cur) + prior_sigma.logpdf(sigma_cur)        
         inner = dict([(str(i),guided_tree[2][i]) for i in range(2)])
         tolog = dict([('root-'+str(l),guided_tree[0][l]) for l in range(2)])
         tolog.update(inner)
-        tolog.update({"alpha": alpha_cur, "sigma": sigma_cur, "log_posterior": log_posterior})
+        tolog.update({"alpha": alpha_cur, "sigma": sigma_cur, "log_posterior": log_posterior[j]})
 
         # Conditional logging, every 10 iterations
         if use_wandb and j % 10 == 0:
@@ -500,15 +488,13 @@ def metropolis_hastings(
     
     # Return results dictionary
     results = {
-        "acceptpath": acceptpath,
         "log_posterior": log_posterior,
         "trees": trees,
-        "tree_counter": tree_counter,
-        "alphas": alphas,
-        "sigmas": sigmas,
-        "acceptpathall": acceptpathall,
+        "alpha": alphas,
+        "sigma": sigmas,
         "acceptsigma": acceptsigmas,  # Uncomment if gtheta acceptance is used
         "acceptalpha": acceptalphas,  # Uncomment if kalpha acceptance is used
+        "acceptpath": acceptpath,
         "settings": {
             "N": N,
             "dt": dt,
