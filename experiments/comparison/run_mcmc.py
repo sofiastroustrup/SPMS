@@ -1,3 +1,12 @@
+# Add at the top of run_mcmc.py
+import os
+# Set thread limits
+os.environ["XLA_FLAGS"] = "--xla_cpu_multi_thread_eigen=false"
+os.environ["OMP_NUM_THREADS"] = "1" 
+os.environ["MKL_NUM_THREADS"] = "1"
+os.environ["NUMEXPR_NUM_THREADS"] = "1"
+
+
 import jax
 import jax.numpy as jnp
 from tqdm import tqdm 
@@ -82,7 +91,7 @@ outputpath = args.outputpath
 os.makedirs(outputpath, exist_ok=True)
 
 # Load tree and leaves
-leaves_path = args.datapath#os.path.join(args.datapath, 'leaves.csv')
+leaves_path = args.datapath #os.path.join(args.datapath, 'leaves.csv')
 leaves = jnp.array(pd.read_csv(leaves_path, delimiter=',', header=None, index_col=None))
 tree = Tree(args.phylopath)
 print(leaves.shape)
@@ -144,8 +153,6 @@ results = metropolis_hastings(
     wandb_project=args.wandb_project
 )
 
-
-
 # Save results
 results_path = os.path.join(outputpath, f"results_chain={seed}.pkl")
 with open(results_path, "wb") as f:
@@ -155,97 +162,3 @@ print(f"Results saved to {results_path}")
 
 
 
-'''import jax
-import jax.numpy as jnp
-from tqdm import tqdm 
-import pandas as pd
-import wandb
-#import argparse
-import scipy
-import pickle 
-from matplotlib.backends.backend_pdf import PdfPages
-import matplotlib.backends.backend_pdf as backend_pdf
-
-
-from bridge_sampling.BFFG import backward_filter, forward_guide, forward_guide_edge, get_logpsi
-from bridge_sampling.setup_SDEs import Stratonovich_to_Ito, dtsdWsT, dWs
-from bridge_sampling.noise_kernel import Q12
-from bridge_sampling.helper_functions import *
-
-from mcmc import *
-
-# change such that I read from stdin 
-outputpath = "seed=10_sigma=0.5_alpha=0.05_dt=0.05/mcmc" # should be the same as used in the simulation
-# phylopath 
-# datapath 
-# params prior 
-# params proposal
-# rb, obs_var, lambda, dt
-
-n = 20
-d = 2
-
-# load tree 
-leaves = jnp.array(pd.read_csv('seed=10_sigma=0.5_alpha=0.05_dt=0.05/leaves.csv', delimiter=',', header=0, index_col=0))#np.genfromtxt('comparison/seed=10_sigma=0.5_alpha=0.05_dt=0.1/leaves.csv', delimiter=','))
-tree = Tree("../data/chazot_subtree_rounded.nw")
-print(leaves.shape)
-
-# choose super root
-vcv = get_tree_covariance("../data/chazot_subtree_rounded.nw")
-print(vcv)
-#vcv = np.genfromtxt(datapath + '/phylogeny_vcv.csv', delimiter=' ')
-#super_root = 1/(np.ones(leaves.shape[0]).T@np.linalg.inv(vcv)@np.ones(leaves.shape[0]))*np.ones(leaves.shape[0]).T@np.linalg.inv(vcv)@leaves
-# Step 1: Solve the linear system vcv @ x = ones
-w = np.linalg.solve(vcv, np.ones(leaves.shape[0])) 
-# Step 2: Normalize the weights
-w_norm = w / np.sum(w)
-# Step 3: Compute weighted average of leaves
-super_root = w_norm.T @ leaves
-
-# define prior and proposal distributions  
-proposal_sigma = MirroredGaussian(tau=0.001, minval=0, maxval=10)
-proposal_alpha = MirroredGaussian(tau=0.001, minval=0, maxval=10)
-prior_sigma = Uniform(minval=0.7, maxval=1.3)
-prior_alpha = Uniform(minval=0.0005, maxval=0.03)
-
-# define stochastic process 
-# define drift and diffusion for process of interest 
-sti=1
-if sti ==1:
-    b,sigma,_ = Stratonovich_to_Ito(lambda t,x,theta: jnp.zeros(n*d),
-                                lambda t,x,theta: Q12(x,theta))
-else:
-    b = lambda t,x,theta: jnp.zeros(n*d)
-    sigma = lambda t,x,theta: Q12(x,theta)
-    
-seed = np.random.randint(0, 1000000)
-
-
-# run mcmc
-
-results = metropolis_hastings(
-    N=3000,
-    dt=0.1, # should pick the same as used in the simulation
-    lambd=0.95,
-    obs_var=0.001,
-    rb=1.0,
-    xs=super_root,
-    drift_term=b, 
-    diffusion_term=sigma,
-    prior_sigma=prior_sigma,
-    prior_alpha=prior_alpha,
-    proposal_sigma=proposal_sigma,
-    proposal_alpha=proposal_alpha,
-    tree=tree,
-    leaves = leaves,
-    n=n, 
-    d=d,
-    outputpath=outputpath,
-    seed_mcmc = seed,
-    use_wandb=False,
-    wandb_project="SPMS_MCMC")
-
-
-# save results
-with open(f"{outputpath}/results_chain={seed}.pkl", "wb") as f:
-    pickle.dump(results, f)'''
