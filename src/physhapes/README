@@ -1,0 +1,14 @@
+Base function for analysis in "Stochastic Phylogenetic Models of Shape". 
+
+To do: 
+- should the kernel be divided by the number of landmarks ? 
+- should backward filtering be done with Stefans approach ? 
+- should we drop stratonovich ito correction ? 
+- can we speed up the code? 
+- can we make the code more numerically stable?
+
+If I end up running everything again, then: 
+- drop stratonovich-ito correction
+
+Long term todo: 
+- make tree traversals independent of ete3 package and more robust
