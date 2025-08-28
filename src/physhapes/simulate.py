@@ -61,7 +61,8 @@ def simulate_shapes(ds, dt, sigma, alpha, root, tree, rb=0, d=2, outputfolder=''
     # simulate data 
     key = jax.random.PRNGKey(ds)
     key, subkey = jax.random.split(key)
-    #tree.dist = rb
+    if rb>0:
+        tree.dist = rb
     for node in tree.traverse("levelorder"): 
         #node.add_feature('T', round(node.dist,1)) # this is a choice for simulation, could be different
         if not abs(round(node.dist/dt) - node.dist/dt) < 1e-10:

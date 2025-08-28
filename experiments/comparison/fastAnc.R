@@ -8,7 +8,7 @@ library(phytools)
 # load simulated data set 
 prepath = ""#"Library/CloudStorage/OneDrive-UniversityofCopenhagen/SPMS"
 folder =  "exp_2_sigma=0.7_alpha=0.025_dt=0.05"
-sim_seed = "seed=3376479340"
+sim_seed = "seed=3713700383"
 simdata <- read_csv(here(prepath, "experiments", "comparison", folder, sim_seed, "procrustes_aligned.csv"), col_names=FALSE)%>% t()
 tree <- read.tree(here("experiments", "data", "chazot_subtree_rounded.nw")) #read.tree(here(paste0(prepath, "/experiments/data/chazot_subtree_rounded.nw")))
 colnames(simdata) <- tree$tip.label
@@ -31,6 +31,11 @@ colnames(anc_matrix) <- (n_tips + 1):(n_tips + n_nodes)  # Node IDs
 rownames(anc_matrix) <- paste0("trait", 1:n_traits)      # Trait names
 print(anc_matrix)
 
+#create output folder 
+output_folder <- here("experiments/comparison", folder, sim_seed, "fastAnc")
+print(output_folder)
+dir.create(output_folder, showWarnings = TRUE, recursive = TRUE)
+
 # Loop through all traits in simdata
 for (i in 1:n_traits) {
   # Extract trait vector and ensure it has names
@@ -47,9 +52,7 @@ for (i in 1:n_traits) {
 }
 
 # export reconstructed states as csv 
-output_folder <- here(paste0(prepath, "/experiments/comparison/", folder, "/fastAnc"))
-dir.create(output_folder, showWarnings = TRUE, recursive = TRUE)
-write.csv(anc_matrix, file=here(paste0(prepath, "/experiments/comparison/", folder, "/fastAnc/fastAnc_recon.csv")))
+write.csv(anc_matrix, file=paste0(output_folder, "/fastAnc_recon.csv"))
 
 
 
