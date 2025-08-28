@@ -10,6 +10,7 @@ data/hercules_forewing_n=20.csv
 # folders and files starting with underscore
 _* 
 results/
+discarded/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
