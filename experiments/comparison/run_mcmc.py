@@ -6,25 +6,18 @@ os.environ["OMP_NUM_THREADS"] = "1"
 os.environ["MKL_NUM_THREADS"] = "1"
 os.environ["NUMEXPR_NUM_THREADS"] = "1"
 
-
-import jax
 import jax.numpy as jnp
-from tqdm import tqdm 
 import pandas as pd
-import wandb
 import argparse
-import scipy
 import pickle 
-from matplotlib.backends.backend_pdf import PdfPages
-import matplotlib.backends.backend_pdf as backend_pdf
 import os
+from ete3 import Tree
+import numpy as np
 
-from bridge_sampling.BFFG import backward_filter, forward_guide, forward_guide_edge, get_logpsi
-from bridge_sampling.setup_SDEs import Stratonovich_to_Ito, dtsdWsT, dWs
-from bridge_sampling.noise_kernel import Q12
-from bridge_sampling.helper_functions import *
-
-from mcmc import *
+from physhapes.setup_SDEs import Stratonovich_to_Ito
+from physhapes.noise_kernel import Q12
+from physhapes.helper_functions import MirroredGaussian, Uniform, get_tree_covariance
+from physhapes.mcmc import metropolis_hastings
 
 # Set up argument parser
 parser = argparse.ArgumentParser(description='Run MCMC simulation with customizable parameters')

@@ -6,11 +6,11 @@ library(here)
 library(phytools)
 
 # load simulated data set 
-prepath = "Library/CloudStorage/OneDrive-UniversityofCopenhagen/SPMS"
-folder =  "exp_1_sigma=0.7_alpha=0.025_dt=0.05/seed=121197884"#"seed=173203733_sigma=0.6_alpha=0.1_dt=0.05" #"seed=4098652401_sigma=0.3_alpha=0.1_dt=0.01" #"seed=1259603298_sigma=0.5_alpha=0.1_dt=0.05" #"seed=10_sigma=0.5_alpha=0.05_dt=0.05"
-simdata <- read_csv(here(paste0(prepath, "/experiments/comparison/", folder, "/procrustes_aligned.csv")), col_names=FALSE)%>% t()
-tree <- read.tree(here(paste0(prepath, "/experiments/data/chazot_subtree.nw")))
-tree$tip.label <- c("A", "B", "C", "D", "E") # set names of tips to match simulated data
+prepath = ""#"Library/CloudStorage/OneDrive-UniversityofCopenhagen/SPMS"
+folder =  "exp_2_sigma=0.7_alpha=0.025_dt=0.05"
+sim_seed = "seed=3376479340"
+simdata <- read_csv(here(prepath, "experiments", "comparison", folder, sim_seed, "procrustes_aligned.csv"), col_names=FALSE)%>% t()
+tree <- read.tree(here("experiments", "data", "chazot_subtree_rounded.nw")) #read.tree(here(paste0(prepath, "/experiments/data/chazot_subtree_rounded.nw")))
 colnames(simdata) <- tree$tip.label
 print(simdata)
 plot(tree)
@@ -29,6 +29,7 @@ CI <- list()
 anc_matrix <- matrix(NA, nrow=n_traits, ncol=n_nodes)
 colnames(anc_matrix) <- (n_tips + 1):(n_tips + n_nodes)  # Node IDs
 rownames(anc_matrix) <- paste0("trait", 1:n_traits)      # Trait names
+print(anc_matrix)
 
 # Loop through all traits in simdata
 for (i in 1:n_traits) {
@@ -38,8 +39,8 @@ for (i in 1:n_traits) {
   
   # Perform ancestral state reconstruction
   anc_result <- fastAnc(tree, trait_vector, model="BM", CI=TRUE)
-  write.csv(anc_result$CI95, col.names=FALSE,file=here(paste0(prepath, "/experiments/comparison/", folder, "/fastAnc/95%_conf_trait",i ,".csv")))
-  
+  write.csv(anc_result$CI95, col.names=FALSE,file=here("experiments", "comparison", folder, sim_seed, paste0("fastAnc/95%_conf_trait",i ,".csv")))
+
   # Store the results in the matrix
   anc_matrix[i,] <- anc_result$ace
   #CI[[i]] <- anc_result$CI  # Store confidence intervals for each trait
