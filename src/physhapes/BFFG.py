@@ -60,7 +60,9 @@ def backward_filter(node, theta, sigma):
     # calculations for c, we use that M=H and Mdagger = H^(-1)
     # use results from page 35 in Continous-discreete smoothing of diffusions
     message['H_logdet'] = jnp.linalg.slogdet(message['H'][0])
-    message['c2'] = (v.shape[0]/2)*jnp.log((2*jnp.pi))-0.5 * message['H_logdet'][0]*message['H_logdet'][1] # det(A^-1)=1/det(A)
+    if message['H_logdet'][0]<=0:
+        print("Warning: non positive determinant of H in BFFG")
+    message['c2'] = (v.shape[0]/2)*jnp.log((2*jnp.pi))-0.5 *message['H_logdet'][1] # det(A^-1)=1/det(A)
     message['mu'] = -jnp.linalg.solve(message['H'][0], message['F'][0])+v
     message['c1'] = (v-message['mu']).T@message['H'][0]@(v-message['mu']) #M=H
     message['c'] = 0.5*message['c1'] + message['c2']
