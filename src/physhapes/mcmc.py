@@ -211,13 +211,22 @@ def metropolis_hastings(
         fgecirc = jax.jit(lambda *x: forward_guide_edge(*x, drift_term, diffusion_term, thetacirc))
         guidedcirc = forward_guide(xs, tree_bf_circ,_dtsdWsT, fgecirc)  
         logpsicirc = get_logpsi(guidedcirc)
-        logrhotildecirc = compute_logrhotilde(data_tree_bf, xs) #-tree_bf_circ.message['c']-0.5*xs.T@tree_bf_circ.message['H'][0]@xs+tree_bf_circ.message['F'][0].T@xs
+        logrhotildecirc = compute_logrhotilde(tree_bf_circ, xs) #-tree_bf_circ.message['c']-0.5*xs.T@tree_bf_circ.message['H'][0]@xs+tree_bf_circ.message['F'][0].T@xs
         
-        # get acceptance probability
-        logprob_cur = logpsicur + logrhotildecur + prior_sigma.logpdf(sigma_cur)
-        logprob_circ = logpsicirc + logrhotildecirc + prior_sigma.logpdf(sigmacirc)
-        log_r = logprob_circ - logprob_cur #logpsicirc - logpsicur + logrhotildecirc - logrhotildecur + scipy.stats.uniform.logpdf(sigmacirc, loc=gtheta_loc, scale=gtheta_scale) - scipy.stats.uniform.logpdf(gtheta_cur, loc=gtheta_loc, scale=gtheta_scale) 
-        A = min(1, np.exp(log_r))
+        # get acceptance probability added if/else to handle out of bounds proposals
+        if sigmacirc < prior_sigma.minval or sigmacirc > prior_sigma.maxval:
+            A = 0  # Explicitly reject proposals outside prior range
+        else:
+            # Regular acceptance calculation
+            logprob_cur = logpsicur + logrhotildecur + prior_sigma.logpdf(sigma_cur)
+            logprob_circ = logpsicirc + logrhotildecirc + prior_sigma.logpdf(sigmacirc)
+            log_r = logprob_circ - logprob_cur 
+            A = min(1, np.exp(log_r))
+        
+        #logprob_cur = logpsicur + logrhotildecur + prior_sigma.logpdf(sigma_cur)
+        #logprob_circ = logpsicirc + logrhotildecirc + prior_sigma.logpdf(sigmacirc)
+        #log_r = logprob_circ - logprob_cur #logpsicirc - logpsicur + logrhotildecirc - logrhotildecur + scipy.stats.uniform.logpdf(sigmacirc, loc=gtheta_loc, scale=gtheta_scale) - scipy.stats.uniform.logpdf(gtheta_cur, loc=gtheta_loc, scale=gtheta_scale) 
+        #A = min(1, np.exp(log_r))
         #print(f'gtheta acceptance probability {A}')
 
         key, subkey = jax.random.split(key, 2)
@@ -264,14 +273,22 @@ def metropolis_hastings(
         fgecirc = jax.jit(lambda *x: forward_guide_edge(*x, drift_term, diffusion_term, thetacirc))
         guidedcirc = forward_guide(xs, tree_bf_circ,_dtsdWsT, fgecirc)
         logpsicirc = get_logpsi(guidedcirc)
-        logrhotildecirc = -tree_bf_circ.message['c']-0.5*xs.T@tree_bf_circ.message['H'][0]@xs+tree_bf_circ.message['F'][0].T@xs
+        logrhotildecirc = compute_logrhotilde(tree_bf_circ, xs) #-tree_bf_circ.message['c']-0.5*xs.T@tree_bf_circ.message['H'][0]@xs+tree_bf_circ.message['F'][0].T@xs
 
-        # get acceptance probability
-        logprob_cur = logpsicur + logrhotildecur + prior_alpha.logpdf(alpha_cur)        
-        logprob_circ = logpsicirc + logrhotildecirc + prior_alpha.logpdf(alphacirc)
+        # get acceptance probability added if/else to handle out of bounds proposals
+        if alphacirc < prior_alpha.minval or alphacirc > prior_alpha.maxval:
+            A = 0  # Explicitly reject proposals outside prior range
+        else:
+            # Regular acceptance calculation
+            logprob_cur = logpsicur + logrhotildecur + prior_alpha.logpdf(alpha_cur)
+            logprob_circ = logpsicirc + logrhotildecirc + prior_alpha.logpdf(alphacirc)
+            log_r = logprob_circ - logprob_cur 
+            A = min(1, np.exp(log_r))
+        #logprob_cur = logpsicur + logrhotildecur + prior_alpha.logpdf(alpha_cur)        
+        #logprob_circ = logpsicirc + logrhotildecirc + prior_alpha.logpdf(alphacirc)
         #log_r = logpsicirc - logpsicur + logrhotildecirc - logrhotildecur + scipy.stats.uniform.logpdf(kalphacirc, loc=kalpha_loc, scale=kalpha_scale) - scipy.stats.uniform.logpdf(kalpha_cur, loc=kalpha_loc, scale=kalpha_scale)  --- IGNORE ---
-        log_r = logprob_circ - logprob_cur #logpsicirc - logpsicur + logrhotildecirc - logrhotildecur + scipy.stats.uniform.logpdf(kalphacirc, loc=kalpha_loc, scale=kalpha_scale) - scipy.stats.uniform.logpdf(kalpha_cur, loc=kalpha_loc, scale=kalpha_scale) 
-        A = min(1, np.exp(log_r))
+        #log_r = logprob_circ - logprob_cur #logpsicirc - logpsicur + logrhotildecirc - logrhotildecur + scipy.stats.uniform.logpdf(kalphacirc, loc=kalpha_loc, scale=kalpha_scale) - scipy.stats.uniform.logpdf(kalpha_cur, loc=kalpha_loc, scale=kalpha_scale) 
+        #A = min(1, np.exp(log_r))
         #print(f'kalpha acceptance probability {A}')
 
         key, subkey = jax.random.split(key, 2)

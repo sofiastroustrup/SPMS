@@ -7,9 +7,9 @@ library(phytools)
 
 # load simulated data set 
 prepath = ""#"Library/CloudStorage/OneDrive-UniversityofCopenhagen/SPMS"
-folder =  "exp_2_sigma=0.7_alpha=0.025_dt=0.05"
-sim_seed = "seed=3713700383"
-simdata <- read_csv(here(prepath, "experiments", "comparison", folder, sim_seed, "procrustes_aligned.csv"), col_names=FALSE)%>% t()
+folder = "exp_2_sigma=0.7_alpha=0.025_dt=0.05"
+sim_seed = "seed=1932765110"
+simdata <- read_csv(here("experiments", "comparison", folder, sim_seed, "procrustes_aligned.csv"), col_names=FALSE)%>% t()
 tree <- read.tree(here("experiments", "data", "chazot_subtree_rounded.nw")) #read.tree(here(paste0(prepath, "/experiments/data/chazot_subtree_rounded.nw")))
 colnames(simdata) <- tree$tip.label
 print(simdata)

@@ -8,7 +8,7 @@ n = 20
 d = 2
 n_species = 5
 
-folder ="exp_2_sigma=0.7_alpha=0.025_dt=0.05/seed=3713700383"
+folder ="exp_2_sigma=0.7_alpha=0.025_dt=0.05/seed=905103247"
 sim <- read_csv(here(paste0("experiments/comparison/", folder, "/leaves.csv")), col_names=FALSE)
 print(sim)
 
