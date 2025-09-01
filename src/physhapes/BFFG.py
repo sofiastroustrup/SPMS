@@ -70,7 +70,7 @@ def backward_filter(node, theta, sigma):
     message['H_logdet'] = jnp.linalg.slogdet(message['H'][0])
     if message['H_logdet'][0]<=0:
         print("Warning: non positive determinant of H in BFFG")
-    message['c2'] = (v.shape[0]/2)*jnp.log((2*jnp.pi))-0.5 *message['H_logdet'][1] # det(A^-1)=1/det(A)
+    message['c2'] = (v.shape[0]/2)*jnp.log((2*jnp.pi))-0.5*message['H_logdet'][1] # det(A^-1)=1/det(A)
     message['mu'] = -jnp.linalg.solve(message['H'][0], message['F'][0])+v
     message['c1'] = (v-message['mu']).T@message['H'][0]@(v-message['mu']) #M=H
     message['c'] = 0.5*message['c1'] + message['c2']
@@ -78,8 +78,6 @@ def backward_filter(node, theta, sigma):
     node.message = message
     node.children = children
     return node
-
-
 
 # forward guide along entire tree
 def forward_guide(v,node,dtsdWsT,forward_guide_edge):
@@ -127,7 +125,7 @@ def forward_guide_edge(x, message, dts, dWs, b, sigma, theta):
                            H-jnp.outer(tilderx,tilderx))
                     )*dt
         rest = t + dt
-        return((resG,rest), (dt,X))
+        return((resG,rest), (dt,X)) # changed from large X
     
 
     # sample
