@@ -40,7 +40,7 @@ def backward_filter(node, theta, sigma):
         subtree_var = 1./jnp.sum(jnp.array([1./(child.T+child.message['subtree_var']) for child in children]),0)
         #tildea = Mdagger/subtree_var
         scaled_H_T = H_T * subtree_var
-        tildea = jnp.linalg.solve(scaled_H_T, jnp.eye(n*d))
+        tildea = jnp.linalg.solve(scaled_H_T, jnp.eye(n*d)) #a(T,v,theta) #jnp.linalg.solve(scaled_H_T, jnp.eye(n*d))
         
     # update node and return
     message = {
