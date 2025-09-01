@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "physhapes"
-version = "0.1.3"
+version = "0.1.4"
 description = "A package for bridge sampling using the scheme from XX"
 authors = [
     { name = "Sofia Stroustrup", email = "sofia@sund.ku.dk" },
