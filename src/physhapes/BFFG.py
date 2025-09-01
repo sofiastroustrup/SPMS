@@ -5,10 +5,11 @@ from .setup_SDEs import *
 from .noise_kernel import *
 
 #jax.config.update("jax_traceback_filtering", "off")
-def safe_solve(A, b, reg=1e-8):
-    """Always apply a small regularization to improve numerical stability"""
-    A_reg = A + jnp.eye(A.shape[0]) * reg
-    return jnp.linalg.solve(A_reg, b)
+# obs! current implementation might encounter numerical issues if sigma is too small
+#def safe_solve(A, b, reg=0):
+#    """Apply a small regularization to improve numerical stability --> this didnt make a difference"""
+#    A_reg = A + jnp.eye(A.shape[0]) * reg
+#    return jnp.linalg.solve(A_reg, b)
     
 def backward_filter(node, theta, sigma):
     #node = dict(node) # make copy to mimic functional approach (no modifiable state)
@@ -41,11 +42,11 @@ def backward_filter(node, theta, sigma):
         #c_T = jnp.sum(jnp.array([child.message['c'](0.,theta) for child in children]),0) 
         #Mdagger = C =  jnp.linalg.inv(H_T) # use solve instead?
         #Mdagger = jnp.linalg.inv(H_T) # removed C, I dont think we use this 
-        v = safe_solve(H_T, F_T, reg=1e-6) #jnp.linalg.solve(H_T, F_T) #jnp.dot(Mdagger,F_T) 
+        v = jnp.linalg.solve(H_T, F_T) #jnp.dot(Mdagger,F_T) 
         subtree_var = 1./jnp.sum(jnp.array([1./(child.T+child.message['subtree_var']) for child in children]),0)
         #tildea = Mdagger/subtree_var
         scaled_H_T = H_T * subtree_var
-        tildea = safe_solve(scaled_H_T, jnp.eye(n*d))#jnp.linalg.solve(scaled_H_T, jnp.eye(n*d)) #a(T,v,theta) #jnp.linalg.solve(scaled_H_T, jnp.eye(n*d))
+        tildea = jnp.linalg.solve(scaled_H_T, jnp.eye(n*d)) #a(T,v,theta) #jnp.linalg.solve(scaled_H_T, jnp.eye(n*d))
         
     # update node and return
     message = {
@@ -60,8 +61,8 @@ def backward_filter(node, theta, sigma):
     # t-dependent values 
     message['tildea'] = tildea
     Phi_inv = lambda t:  np.eye(n*d)+H_T@message['tildea']*(T-t)
-    message['H'] = jax.vmap(lambda ti: safe_solve(Phi_inv(ti), H_T))(_ts)
-    message['F'] = jax.vmap(lambda ti: safe_solve(Phi_inv(ti), F_T))(_ts)
+    message['H'] = jax.vmap(lambda ti: jnp.linalg.solve(Phi_inv(ti), H_T))(_ts)
+    message['F'] = jax.vmap(lambda ti: jnp.linalg.solve(Phi_inv(ti), F_T))(_ts)
 
     # calculations for c, we use that M=H and Mdagger = H^(-1)
     # use results from page 35 in Continous-discreete smoothing of diffusions
@@ -69,7 +70,7 @@ def backward_filter(node, theta, sigma):
     if message['H_logdet'][0]<=0:
         print("Warning: non positive determinant of H in BFFG")
     message['c2'] = (v.shape[0]/2)*jnp.log((2*jnp.pi))-0.5 *message['H_logdet'][1] # det(A^-1)=1/det(A)
-    message['mu'] = -safe_solve(message['H'][0], message['F'][0])+v #-jnp.linalg.solve(message['H'][0], message['F'][0])+v
+    message['mu'] = -jnp.linalg.solve(message['H'][0], message['F'][0])+v
     message['c1'] = (v-message['mu']).T@message['H'][0]@(v-message['mu']) #M=H
     message['c'] = 0.5*message['c1'] + message['c2']
 
