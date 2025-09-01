@@ -145,10 +145,9 @@ def get_logpsi(tree):
     return(LogPhi)
 
 
-
-#### Currently not used, but kept for reference
-
+# currently note used 
 def backward_filter_better(node, theta, sigma):
+    """Backward filter with better numerical stability"""
     #node = dict(node) # make copy to mimic functional approach (no modifiable state)
     node = node.copy()
     _ts = jnp.cumsum(jnp.concatenate((jnp.array([0.]), dts(T=node.T, n_steps = node.n_steps))))[:-1]
