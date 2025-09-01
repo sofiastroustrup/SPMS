@@ -42,12 +42,11 @@ def backward_filter(node, theta, sigma):
         H_T = jnp.sum(jnp.array([child.message['H'][0] for child in children]),0)
         #c_T = jnp.sum(jnp.array([child.message['c'](0.,theta) for child in children]),0) 
         #Mdagger = C =  jnp.linalg.inv(H_T) # use solve instead?
-        #Mdagger = jnp.linalg.inv(H_T) # removed C, I dont think we use this 
-        v = jnp.linalg.solve(H_T, F_T) #jnp.dot(Mdagger,F_T) 
+        Mdagger = jnp.linalg.inv(H_T) # should be more numerically stabel with solve
+        v = jnp.dot(Mdagger,F_T) # should be more numerically stable with solve
         subtree_var = 1./jnp.sum(jnp.array([1./(child.T+child.message['subtree_var']) for child in children]),0)
-        #tildea = Mdagger/subtree_var
-        scaled_H_T = H_T * subtree_var
-        tildea = jnp.linalg.solve(scaled_H_T, jnp.eye(n*d)) #a(T,v,theta) #jnp.linalg.solve(scaled_H_T, jnp.eye(n*d))
+        tildea = Mdagger/subtree_var
+
         
     # update node and return
     message = {
@@ -125,7 +124,7 @@ def forward_guide_edge(x, message, dts, dWs, b, sigma, theta):
                            H-jnp.outer(tilderx,tilderx))
                     )*dt
         rest = t + dt
-        return((resG,rest), (dt,X)) # changed from large X
+        return((resG,rest), (dt,X)) 
     
 
     # sample
@@ -149,7 +148,7 @@ def get_logpsi(tree):
 
 #### Currently not used, but kept for reference
 
-def backward_filter_original(node, theta, sigma):
+def backward_filter_better(node, theta, sigma):
     #node = dict(node) # make copy to mimic functional approach (no modifiable state)
     node = node.copy()
     _ts = jnp.cumsum(jnp.concatenate((jnp.array([0.]), dts(T=node.T, n_steps = node.n_steps))))[:-1]
@@ -179,11 +178,14 @@ def backward_filter_original(node, theta, sigma):
         H_T = jnp.sum(jnp.array([child.message['H'][0] for child in children]),0)
         #c_T = jnp.sum(jnp.array([child.message['c'](0.,theta) for child in children]),0) 
         #Mdagger = C =  jnp.linalg.inv(H_T) # use solve instead?
-        Mdagger = jnp.linalg.inv(H_T) # removed C, I dont think we use this 
-        v = jnp.linalg.solve(H_T, F_T) #jnp.dot(Mdagger,F_T) 
+        #Mdagger = jnp.linalg.inv(H_T) # removed C, I dont think we use this 
+        #v = jnp.linalg.solve(H_T, F_T) #jnp.dot(Mdagger,F_T) 
         subtree_var = 1./jnp.sum(jnp.array([1./(child.T+child.message['subtree_var']) for child in children]),0)
-        tildea = Mdagger/subtree_var
-        
+        #tildea = Mdagger/subtree_var
+        v = jnp.linalg.solve(H_T, F_T) #jnp.dot(Mdagger,F_T) 
+        scaled_H_T = H_T * subtree_var
+        tildea = jnp.linalg.solve(scaled_H_T, jnp.eye(n*d)) #a(T,v,theta) #jnp.linalg.solve(scaled_H_T, jnp.eye(n*d))
+    
     # update node and return
     message = {
         'theta': theta,
