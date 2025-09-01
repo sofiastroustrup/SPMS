@@ -138,9 +138,9 @@ def metropolis_hastings(
     fge = jax.jit(lambda *x: forward_guide_edge(*x, drift_term, diffusion_term, theta_cur))
     initialized_tree = forward_guide(xs, data_tree_bf,_dtsdWsT, fge) 
     logpsicur = get_logpsi_jit(initialized_tree)
-    print(f'Initial logpsicur {logpsicur}')
+    #print(f'Initial logpsicur {logpsicur}')
     logrhotildecur = compute_logrhotilde(data_tree_bf, xs) #-data_tree_bf.message['c']-0.5*xs.T@data_tree_bf.message['H'][0]@xs+data_tree_bf.message['F'][0].T@xs
-    print(f'Initial logrhotildecur {logrhotildecur}')
+    #print(f'Initial logrhotildecur {logrhotildecur}')
     # results
     guided_tree = get_flat_values(initialized_tree) 
 
@@ -188,7 +188,7 @@ def metropolis_hastings(
             #tree_counter[-1]+=1   
         # log 
         trees[tree_idx] = guided_tree; tree_idx += 1
-        print(f"logpsicur after path update {logpsicur}")
+        #print(f"logpsicur after path update {logpsicur}")
         # log 
         #log_posterior[j] = logpsicur 
         #inner = dict([(str(i),guided_tree[2][i]) for i in range(2)])
@@ -256,8 +256,8 @@ def metropolis_hastings(
         # store values 
         trees[tree_idx] = guided_tree; tree_idx += 1
         sigmas[j+1] = sigma_cur
-        print(f"logpsicur after sigma update {logpsicur}")
-        print(f"logrhotildecur after sigma update {logrhotildecur}")
+        #print(f"logpsicur after sigma update {logpsicur}")
+        #print(f"logrhotildecur after sigma update {logrhotildecur}")
         #######################
         ##   propose kalpha  ##
         #######################
@@ -315,8 +315,8 @@ def metropolis_hastings(
             #tree_counter.append(1)
         #else: 
             #tree_counter[-1]+=1
-        print(f"logpsicur after alpha update {logpsicur}")
-        print(f"logrhotildecur after alpha update {logrhotildecur}")
+        #print(f"logpsicur after alpha update {logpsicur}")
+        #print(f"logrhotildecur after alpha update {logrhotildecur}")
         # store values 
         alphas[j+1] = alpha_cur
         trees[tree_idx] = guided_tree; tree_idx += 1
