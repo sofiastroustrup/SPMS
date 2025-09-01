@@ -185,7 +185,7 @@ def forward_guide_edge(x, message, dts, dWs, b, sigma, theta):
                            H-jnp.outer(tilderx,tilderx))
                     )*dt
         rest = t + dt
-        return((resG,rest), (dt,x))
+        return((resG,rest), (dt,X))
     
 
     # sample
