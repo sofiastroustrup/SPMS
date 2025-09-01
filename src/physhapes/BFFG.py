@@ -1,5 +1,6 @@
 import jax
 import jax.numpy as jnp
+from jax import debug
 
 from .setup_SDEs import *
 from .noise_kernel import *
@@ -78,6 +79,80 @@ def backward_filter(node, theta, sigma):
     node.children = children
     return node
 
+
+
+# forward guide along entire tree
+def forward_guide(v,node,dtsdWsT,forward_guide_edge):
+    children = node.children
+    (dts,dWs),dWs_children = dtsdWsT
+    Xscirc,logPsi = forward_guide_edge(v,node.message,dts,dWs) # sample edge
+    return dts,dWs,Xscirc,logPsi,[forward_guide(Xscirc[-1],child,dtsdWs_child, forward_guide_edge) 
+                                  for child,dtsdWs_child in zip(children,dWs_children)]
+
+
+def forward_guide_edge(x, message, dts, dWs, b, sigma, theta):
+    tildea = message['tildea']
+    #tildebeta = lambda t,theta: 0 # message['tildebeta']
+    #tilder = message['tilder']
+    H = message['H']
+    F = message['F']
+    
+    #tildeb = lambda t,x,theta: tildebeta(t,theta) #+jnp.dot(tildeB,x) #tildeB is zero for now
+
+    def a(t,x,theta):
+        sigmax = sigma(t,x,theta)
+        return jnp.einsum('ij,kj->ik',sigmax,sigmax)
+
+    def bridge_MS(res, el):
+        t, X = res
+        dt, dW, H, F = el
+        Xcur = X + b(t,X, theta)*dt + jnp.dot(a(t,X,theta), F-jnp.dot(H,X))*dt + jnp.dot(sigma(t,X, theta),dW)
+        tcur = t + dt
+        return((tcur,Xcur), (t, X))
+    
+    def logpsi(res, el): # numerical instabilities might arise here if sigma is too small
+        G, t = res
+        dt, X, H, F = el 
+        tilderx = F-jnp.dot(H,X) 
+
+        # Calculate components separately for monitoring
+        drift_diff = jnp.dot(b(t,X,theta),tilderx) # tildeb is 0, so this is just b(t,X,theta)@x
+        diff_matrix = a(t,X,theta)-tildea
+        matrix_form = H-jnp.outer(tilderx,tilderx)
+        diffusion_diff = -0.5*jnp.einsum('ij,ji->', diff_matrix, matrix_form)
+        
+        # Apply clipping to prevent extreme values
+        #drift_diff = jnp.clip(drift_diff, -1e2, 1e2)  # Much stronger clipping
+        #diffusion_diff = jnp.clip(diffusion_diff, -1e2, 1e2)  # Much stronger clipping
+
+        # Combine with clipping
+        increment = (drift_diff + diffusion_diff) * dt
+        #increment = jnp.clip(increment, -1e4, 1e4)  # Very aggressive clipping
+
+        resG = G + increment
+        rest = t + dt
+        return((resG,rest), (dt,X))
+    
+
+    # sample
+    (T, X), (ts, Xs)=jax.lax.scan(bridge_MS,(0., x),(dts, dWs, H, F))
+    Xscirc = jnp.vstack((Xs, X))
+    final , _ = jax.lax.scan(logpsi, (0, 0), (dts, Xscirc[:-1,:], H, F))
+    return Xscirc,final[0]
+
+@jax.jit
+def get_logpsi(tree):
+    LogPhi = 0
+    _,_,_,logphi, children = tree
+    LogPhi+=jnp.array(logphi, float)
+    for child in children:
+        LogPhi += get_logpsi(child)
+    return(LogPhi)
+
+
+
+#### Currently not used, but kept for reference
+
 def backward_filter_original(node, theta, sigma):
     #node = dict(node) # make copy to mimic functional approach (no modifiable state)
     node = node.copy()
@@ -144,17 +219,8 @@ def backward_filter_original(node, theta, sigma):
     return node
 
 
-# forward guide along entire tree
-def forward_guide(v,node,dtsdWsT,forward_guide_edge):
-    children = node.children
-    (dts,dWs),dWs_children = dtsdWsT
-    Xscirc,logPsi = forward_guide_edge(v,node.message,dts,dWs) # sample edge
-    return dts,dWs,Xscirc,logPsi,[forward_guide(Xscirc[-1],child,dtsdWs_child, forward_guide_edge) 
-                                  for child,dtsdWs_child in zip(children,dWs_children)]
-
-
 # forward sampling along edge, assumes already backward filtered
-def forward_guide_edge(x, message, dts, dWs, b, sigma, theta):
+def forward_guide_edge_original(x, message, dts, dWs, b, sigma, theta):
     tildea = message['tildea']
     tildebeta = lambda t,theta: 0 # message['tildebeta']
     #tilder = message['tilder']
@@ -200,14 +266,7 @@ def forward_guide_edge(x, message, dts, dWs, b, sigma, theta):
     final , _ = jax.lax.scan(logpsi, (0, 0), (dts, Xscirc[:-1,:], H, F))
     return Xscirc,final[0]
 
-@jax.jit
-def get_logpsi(tree):
-    LogPhi = 0
-    _,_,_,logphi, children = tree
-    LogPhi+=jnp.array(logphi, float)
-    for child in children:
-        LogPhi += get_logpsi(child)
-    return(LogPhi)
+
 
 
 
