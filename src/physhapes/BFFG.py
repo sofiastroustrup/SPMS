@@ -45,7 +45,7 @@ def backward_filter(node, theta, sigma):
         Mdagger = jnp.linalg.inv(H_T) # should be more numerically stabel with solve
         v = jnp.dot(Mdagger,F_T) # should be more numerically stable with solve
         subtree_var = 1./jnp.sum(jnp.array([1./(child.T+child.message['subtree_var']) for child in children]),0)
-        tildea = Mdagger/subtree_var
+        tildea = Mdagger/subtree_var # could be done better i.e. using solve ror a(T, v, theta)
 
         
     # update node and return
