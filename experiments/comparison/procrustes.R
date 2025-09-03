@@ -3,15 +3,14 @@ library(readr)
 library(dplyr)
 library(here)
 library(stringr)
-library(reticulate)
 n = 20 
 d = 2
-n_species = 5
 
-folder ="exp_2_sigma=0.7_alpha=0.05_dt=0.05/seed=658822120"
+
+folder ="full_tree_sigma=0.6_alpha=0.025_dt=0.05/seed=3862152910"
 sim <- read_csv(here(paste0("experiments/comparison/", folder, "/leaves.csv")), col_names=FALSE)
-print(sim)
-
+print(dim(sim))
+n_species <- nrow(sim)
 # reshape simulated data to fit with geomorph:  n_landmarks x n_dim x n_specimens
 sim_mat <- as.matrix(sim)
 reshaped_sim <- sapply(lapply(1:n_species, function(ii) {
@@ -31,7 +30,12 @@ pdf(here(paste0("experiments/comparison/", folder, "/procrustes_plot.pdf")),
 plot(proc)
 dev.off()
 # export procrustes aligned and rotated data 
-proc_final <- array_reshape(aperm(proc$coords, c(3, 1, 2)), c(n_species, n*d))
+coords_perm <- aperm(proc$coords, c(3, 2, 1))
+print(dim(coords_perm))
+# Then, reshape to (n_species, n*d) using matrix()
+proc_final <- matrix(coords_perm, nrow = n_species, ncol = n * d)
+
+#proc_final <- array_reshape(aperm(proc$coords, c(3, 1, 2)), c(n_species, n*d))
 write.table(proc_final, file=here(paste0("experiments/comparison/", folder, "/procrustes_aligned.csv")), row.names=FALSE, col.names=FALSE, sep=",")
 
 # rotate proc_final 45 degrees and export
