@@ -106,6 +106,71 @@ def forward_guide_edge(x, message, dts, dWs, b, sigma, theta):
         Xcur = X + b(t,X, theta)*dt + jnp.dot(a(t,X,theta), F-jnp.dot(H,X))*dt + jnp.dot(sigma(t,X, theta),dW)
         tcur = t + dt
         return((tcur,Xcur), (t, X))
+    
+    def logpsi(res, el):
+        """
+        - `res`: The result from the previous loop.
+        - `el`: The current array element.
+        """
+        G, t = res
+        dt, X, H, F = el 
+        tilderx = F - jnp.dot(H, X)
+        b_diff = b(t, X, theta) - tildeb(t, X, theta)
+        a_diff = a(t, X, theta) - tildea
+        H_minus_outer = H - jnp.outer(tilderx, tilderx)
+        einsum_val = jnp.einsum('ij,ji->', a_diff, H_minus_outer)
+        dot_val = jnp.dot(b_diff, tilderx)
+        resG = G + (dot_val - 0.5 * einsum_val) * dt
+        rest = t + dt
+
+        # Debug prints
+        #jax.debug.print("dt={}", dt)
+        #jax.debug.print("X={}", X)
+        #jax.debug.print("H={}", H)
+        #jax.debug.print("F={}", F)
+        #jax.debug.print("tilderx={}", tilderx)
+        #jax.debug.print("b(t,X,theta)={}", b(t, X, theta))
+        #jax.debug.print("tildeb(t,X,theta)={}", tildeb(t, X, theta))
+        #jax.debug.print("b_diff={}", b_diff)
+        #jax.debug.print("a(t,X,theta)={}", a(t, X, theta))
+        #jax.debug.print("tildea={}", tildea)
+        #jax.debug.print("a_diff={}", a_diff)
+        #jax.debug.print("H_minus_outer={}", H_minus_outer)
+        #jax.debug.print("einsum_val={}", einsum_val)
+        #jax.debug.print("dot_val={}", dot_val)
+        #jax.debug.print("resG={}", resG)
+        #jax.debug.print("rest={}", rest)
+
+        return ((resG, rest), (dt, X))
+    
+
+    # sample
+    (T, X), (ts, Xs)=jax.lax.scan(bridge_MS,(0., x),(dts, dWs, H, F))
+    Xscirc = jnp.vstack((Xs, X))
+    final , _ = jax.lax.scan(logpsi, (0, 0), (dts, Xscirc[:-1,:], H, F))
+    return Xscirc,final[0]
+
+
+# forward sampling along edge, assumes already backward filtered
+def forward_guide_edge_original(x, message, dts, dWs, b, sigma, theta):
+    tildea = message['tildea']
+    tildebeta = lambda t,theta: 0 # message['tildebeta']
+    #tilder = message['tilder']
+    H = message['H']
+    F = message['F']
+    
+    tildeb = lambda t,x,theta: tildebeta(t,theta) #+jnp.dot(tildeB,x) #tildeB is zero for now
+
+    def a(t,x,theta):
+        sigmax = sigma(t,x,theta)
+        return jnp.einsum('ij,kj->ik',sigmax,sigmax)
+
+    def bridge_MS(res, el):
+        t, X = res
+        dt, dW, H, F = el
+        Xcur = X + b(t,X, theta)*dt + jnp.dot(a(t,X,theta), F-jnp.dot(H,X))*dt + jnp.dot(sigma(t,X, theta),dW)
+        tcur = t + dt
+        return((tcur,Xcur), (t, X))
 
     # likelihood ratio
     def logpsi(res, el):
@@ -135,7 +200,7 @@ def forward_guide_edge(x, message, dts, dWs, b, sigma, theta):
 
 
 
-@jax.jit
+#@jax.jit
 def get_logpsi(tree):
     LogPhi = 0
     _,_,_,logphi, children = tree
