@@ -7,13 +7,12 @@ library(phytools)
 
 # load simulated data set 
 prepath = ""#"Library/CloudStorage/OneDrive-UniversityofCopenhagen/SPMS"
-folder = "exp_2_sigma=0.7_alpha=0.025_dt=0.05"
-sim_seed = "seed=930739538"
+folder = "exp_2_sigma=0.7_alpha=0.05_dt=0.05"
+sim_seed = "seed=658822120"
 simdata <- read_csv(here("experiments", "comparison", folder, sim_seed, "procrustes_aligned_rotated45.csv"), col_names=FALSE)%>% t()
 tree <- read.tree(here("experiments", "data", "chazot_subtree_rounded.nw")) #read.tree(here(paste0(prepath, "/experiments/data/chazot_subtree_rounded.nw")))
 colnames(simdata) <- tree$tip.label
 print(simdata)
-plot(tree)
 
 # do ancestral reconstruction
 # fastAnc uses felsensteins pruning algorithm and reroots the tree to get MLE
