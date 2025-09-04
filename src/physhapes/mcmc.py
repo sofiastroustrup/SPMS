@@ -13,13 +13,7 @@ import glob
 from .BFFG import backward_filter, forward_guide, forward_guide_edge, get_logpsi
 from .setup_SDEs import dtsdWsT, dWs
 from .helper_functions import *
-#import subprocess
-#import time
-#from bridge_sampling.noise_kernel import Q12
-#from matplotlib.backends.backend_pdf import PdfPages
-#import matplotlib.backends.backend_pdf as backend_pdf
-#¨#import argparse
-#import scipy
+
 
 
 get_logpsi_jit = jax.jit(get_logpsi)
@@ -399,29 +393,3 @@ def load_mcmc_results(filepath_pattern):
             results.append(pickle.load(f))
     return results
 
-
-#def expand_mcmc_samples(trees, tree_counter):
-#    """
-#    Expand MCMC samples according to tree counter values.
-    
-#    Parameters:
-#    -----------
-#    trees : ndarray
-#        Array of tree states from MCMC (shape: [n_samples, ...])
-#    tree_counter : list
-#        Number of times each tree state should be repeated
-        
-#    Returns:
-#    --------
-#    ndarray
-#        Expanded array of tree states
-#    """
-#    expanded = []
-#    assert len(tree_counter) <= trees.shape[0], "More counters than trees"
-#    
-#    for i, count in enumerate(tree_counter):
-#        if i < trees.shape[0]:  # Safety check
-#            for _ in range(count):
-#                expanded.append(trees[i])
-#    
-#    return np.array(expanded)
