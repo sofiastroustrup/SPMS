@@ -108,8 +108,12 @@ else:
     print(f"Using provided super root: {args.super_root}")
     super_root= jnp.array(pd.read_csv(args.super_root, delimiter=',', header=None, index_col=None)).squeeze()
     print(super_root.shape)
+    
+np.savetxt(os.path.join(outputpath, 'super_root.csv'), super_root, delimiter=',')
+print("Super root:", super_root)
+
 # Define prior and proposal distributions  
-proposal_sigma = MirroredGaussian(tau=args.proposal_sigma_tau, minval=0.2, maxval=10)
+proposal_sigma = MirroredGaussian(tau=args.proposal_sigma_tau, minval=0, maxval=10)
 proposal_alpha = MirroredGaussian(tau=args.proposal_alpha_tau, minval=0, maxval=10)
 prior_sigma = Uniform(minval=args.prior_sigma_min, maxval=args.prior_sigma_max)
 prior_alpha = Uniform(minval=args.prior_alpha_min, maxval=args.prior_alpha_max)
@@ -127,7 +131,7 @@ else:
     
 # Set random seed
 if args.seed_mcmc is None:
-    seed = np.random.randint(0, 1000000)
+    seed = np.random.randint(0, 1000000000)
 else:
     seed = args.seed_mcmc
 
