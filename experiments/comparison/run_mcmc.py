@@ -100,6 +100,9 @@ w_norm = w / np.sum(w)
 # Step 3: Compute weighted average of leaves
 super_root = w_norm.T @ leaves
 
+np.savetxt(os.path.join(outputpath, 'super_root.csv'), super_root, delimiter=',')
+print("Super root:", super_root)
+
 # Define prior and proposal distributions  
 proposal_sigma = MirroredGaussian(tau=args.proposal_sigma_tau, minval=0, maxval=10)
 proposal_alpha = MirroredGaussian(tau=args.proposal_alpha_tau, minval=0, maxval=10)
@@ -118,7 +121,7 @@ else:
     
 # Set random seed
 if args.seed_mcmc is None:
-    seed = np.random.randint(0, 1000000)
+    seed = np.random.randint(0, 1000000000)
 else:
     seed = args.seed_mcmc
 
