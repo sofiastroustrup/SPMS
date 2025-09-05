@@ -61,6 +61,7 @@ parser.add_argument('--d', type=int, default=2,
                     help='Dimension of landmarks')
 parser.add_argument('--N', type=int, default=3000, 
                     help='Number of MCMC iterations')
+parser.add_argument('--super_root', type=str, default="phylomean")
 
 # Other options
 parser.add_argument('--seed_mcmc', type=int, default=None, 
@@ -71,6 +72,7 @@ parser.add_argument('--wandb_project', type=str, default="SPMS_MCMC",
                     help='Weights & Biases project name')
 parser.add_argument('--stratonovich', type=int, default=1,
                     help='Use Stratonovich (1) or Ito (0) formulation')
+
 
 # Parse arguments
 args = parser.parse_args()
@@ -93,13 +95,20 @@ print(leaves.shape)
 vcv = get_tree_covariance(args.phylopath)
 print(vcv)
 
-# Step 1: Solve the linear system vcv @ x = ones
-w = np.linalg.solve(vcv, np.ones(leaves.shape[0])) 
-# Step 2: Normalize the weights
-w_norm = w / np.sum(w)
-# Step 3: Compute weighted average of leaves
-super_root = w_norm.T @ leaves
-
+if args.super_root == "phylomean":
+    print("Using phylogenetic mean as super root")
+    # Step 1: Solve the linear system vcv @ x = ones
+    w = np.linalg.solve(vcv, np.ones(leaves.shape[0])) 
+    # Step 2: Normalize the weights
+    w_norm = w / np.sum(w)
+    # Step 3: Compute weighted average of leaves
+    super_root = w_norm.T @ leaves
+    print(super_root.shape)
+else: 
+    print(f"Using provided super root: {args.super_root}")
+    super_root= jnp.array(pd.read_csv(args.super_root, delimiter=',', header=None, index_col=None)).squeeze()
+    print(super_root.shape)
+    
 np.savetxt(os.path.join(outputpath, 'super_root.csv'), super_root, delimiter=',')
 print("Super root:", super_root)
 
@@ -108,6 +117,7 @@ proposal_sigma = MirroredGaussian(tau=args.proposal_sigma_tau, minval=0, maxval=
 proposal_alpha = MirroredGaussian(tau=args.proposal_alpha_tau, minval=0, maxval=10)
 prior_sigma = Uniform(minval=args.prior_sigma_min, maxval=args.prior_sigma_max)
 prior_alpha = Uniform(minval=args.prior_alpha_min, maxval=args.prior_alpha_max)
+
 
 # Define stochastic process
 if args.stratonovich == 1:

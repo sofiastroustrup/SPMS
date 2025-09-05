@@ -7,7 +7,7 @@ n = 20
 d = 2
 
 
-folder ="unit_root_sigma=0.5_alpha=0.005_dt=0.05/seed=1022597367"
+folder ="unit_root_sigma=0.3_alpha=0.015_dt=0.05/seed=188626391"
 sim <- read_csv(here(paste0("experiments/comparison/", folder, "/leaves.csv")), col_names=FALSE)
 print(dim(sim))
 n_species <- nrow(sim)

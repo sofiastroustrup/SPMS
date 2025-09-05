@@ -7,8 +7,8 @@ library(phytools)
 
 # load simulated data set 
 prepath = ""#"Library/CloudStorage/OneDrive-UniversityofCopenhagen/SPMS"
-folder = "sigma=0.4_alpha=0.025_dt=0.05"
-sim_seed = "seed=3822439040"
+folder = "unit_root_sigma=0.3_alpha=0.015_dt=0.05"
+sim_seed = "seed=188626391"
 simdata <- read_csv(here("experiments", "comparison", folder, sim_seed, "procrustes_aligned_rotated45.csv"), col_names=FALSE)%>% t()
 tree <- read.tree(here("experiments", "data", "chazot_subtree_rounded.nw")) #read.tree(here(paste0(prepath, "/experiments/data/chazot_subtree_rounded.nw")))
 colnames(simdata) <- tree$tip.label
@@ -60,8 +60,8 @@ write.csv(anc_matrix, file=paste0(output_folder, "/fastAnc_recon.csv"))
 ########################################
 
 # Create output directory if it doesn't exist
-output_folder <- here(paste0("experiments/comparison/", folder, "/plots"))
-dir.create(output_folder, showWarnings = FALSE, recursive = TRUE)
+#output_folder <- here(paste0("experiments/comparison/", folder, "/plots"))
+#dir.create(paste0(output_folder, "/plots"), showWarnings = FALSE, recursive = TRUE)
 
 # Save the grid of ancestral shape plots to PDF
 pdf(file.path(output_folder, "ancestral_shapes_grid.pdf"), 
