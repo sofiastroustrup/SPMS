@@ -112,7 +112,7 @@ def plot_samples_from_posterior(chain_results, burnin_percent, node_idx, sample_
     pdf = backend_pdf.PdfPages(savepath + f'/samples-posterior-sample_n={sample_every}_burnin_percent={burnin_percent}.pdf')
     
     burnin_end = int(chain_results[0]['trees'].shape[0] * burnin_percent)
-    
+    print(f"Burnin ends at index: {burnin_end}")
     for idx in node_idx: # loop over innernodes
         fig, axes = plt.subplots(nrows=1, ncols=1, figsize=(5,5))
         
@@ -139,7 +139,7 @@ def plot_samples_from_posterior(chain_results, burnin_percent, node_idx, sample_
             
             # Plot each shape sample
             for i in range(inode.shape[0]):
-                x_coords = inode[i, ::2]  # Every other element, starting at 0 (x coordinates)
+                x_coords = inode[i, 0::2]  # Every other element, starting at 0 (x coordinates)
                 y_coords = inode[i, 1::2]  # Every other element, starting at 1 (y coordinates)
                 axes.plot(x_coords, y_coords, '--.', color='steelblue', alpha=0.3)
             
