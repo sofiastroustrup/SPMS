@@ -123,24 +123,6 @@ def forward_guide_edge(x, message, dts, dWs, b, sigma, theta):
         resG = G + (dot_val - 0.5 * einsum_val) * dt
         rest = t + dt
 
-        # Debug prints
-        #jax.debug.print("dt={}", dt)
-        #jax.debug.print("X={}", X)
-        #jax.debug.print("H={}", H)
-        #jax.debug.print("F={}", F)
-        #jax.debug.print("tilderx={}", tilderx)
-        #jax.debug.print("b(t,X,theta)={}", b(t, X, theta))
-        #jax.debug.print("tildeb(t,X,theta)={}", tildeb(t, X, theta))
-        #jax.debug.print("b_diff={}", b_diff)
-        #jax.debug.print("a(t,X,theta)={}", a(t, X, theta))
-        #jax.debug.print("tildea={}", tildea)
-        #jax.debug.print("a_diff={}", a_diff)
-        #jax.debug.print("H_minus_outer={}", H_minus_outer)
-        #jax.debug.print("einsum_val={}", einsum_val)
-        #jax.debug.print("dot_val={}", dot_val)
-        #jax.debug.print("resG={}", resG)
-        #jax.debug.print("rest={}", rest)
-
         return ((resG, rest), (dt, X))
     
 
@@ -210,7 +192,7 @@ def get_logpsi(tree):
     return(LogPhi)
 
 
-# currently note used 
+# currently not used 
 def backward_filter_better(node, theta, sigma):
     """Backward filter with better numerical stability"""
     #node = dict(node) # make copy to mimic functional approach (no modifiable state)

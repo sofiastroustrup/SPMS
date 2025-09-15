@@ -16,7 +16,7 @@ from .helper_functions import *
 
 
 
-get_logpsi_jit = jax.jit(get_logpsi)
+#get_logpsi_jit = jax.jit(get_logpsi)
 
 def compute_logrhotilde(tree_bf, xs):
     return -tree_bf.message['c'] - 0.5*xs.T@tree_bf.message['H'][0]@xs + tree_bf.message['F'][0].T@xs
@@ -131,7 +131,7 @@ def metropolis_hastings(
     # Initiate tree
     fge = jax.jit(lambda *x: forward_guide_edge(*x, drift_term, diffusion_term, theta_cur))
     initialized_tree = forward_guide(xs, data_tree_bf,_dtsdWsT, fge) 
-    logpsicur = get_logpsi_jit(initialized_tree)
+    logpsicur = get_logpsi(initialized_tree)
     #print(f'Initial logpsicur {logpsicur}')
     logrhotildecur = compute_logrhotilde(data_tree_bf, xs) #-data_tree_bf.message['c']-0.5*xs.T@data_tree_bf.message['H'][0]@xs+data_tree_bf.message['F'][0].T@xs
     #print(f'Initial logrhotildecur {logrhotildecur}')
@@ -195,7 +195,7 @@ def metropolis_hastings(
         #######################
         # propose parameter, proposal is mirrored gaussian with sd
         key, subkey = jax.random.split(key, 2)
-        sigmacirc = proposal_sigma.sample(subkey, sigma_cur)#mirrored_gaussian(subkey, gtheta_cur, tau_s, 0, 10) # symmetric proposal
+        sigmacirc = proposal_sigma.sample(subkey, sigma_cur) #mirrored_gaussian(subkey, gtheta_cur, tau_s, 0, 10) # symmetric proposal
         thetacirc = theta_cur.copy()
         thetacirc['inv_k_sigma']= 1./(sigmacirc)*jnp.eye(d) # update kernel width
         
@@ -252,6 +252,7 @@ def metropolis_hastings(
         sigmas[j+1] = sigma_cur
         #print(f"logpsicur after sigma update {logpsicur}")
         #print(f"logrhotildecur after sigma update {logrhotildecur}")
+        
         #######################
         ##   propose kalpha  ##
         #######################
@@ -374,6 +375,8 @@ def metropolis_hastings(
     }
     
     return results
+
+
 
 
 def load_mcmc_results(filepath_pattern):
