@@ -27,7 +27,7 @@ experiments/follow_up_experiments/procrustes/simulations/*
 experiments/follow_up_experiments/procrustes/discarded/*
 
 # ignore following folders in original_experiments
-*/results/
+experiments/original_experiments/results/
 
 # ingore in src
 src/physhapes/TODO
