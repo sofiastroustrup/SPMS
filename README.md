@@ -26,4 +26,3 @@ First install jax. Then run
 pip install -e . 
 ```
 
-Please create a virtual environment and install all packages listed in requirements.txt. One way to do this is running the following in the commandline 
