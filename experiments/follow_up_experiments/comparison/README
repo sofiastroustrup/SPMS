@@ -1,0 +1,8 @@
+In this folder we provide code for comparing ancestral reconstructions in geomorph and with MCMC. 
+
+1- We simulate data using simulate_data.ipynb
+2- We infer the posterior distribution using infer_posterior and run_mcmc.py
+3- We infer the ancestral states and variances under a standard Brownian motion using fastAnc.R
+4- We analyze results and compare using analyze_results.ipynb
+
+
