@@ -52,12 +52,12 @@ def simulate_shapes(ds, dt, sigma, alpha, root, tree, rb=0, d=2, outputfolder=''
     
     # define stochastic process terms
     if sti ==1:
-        b,sigma,_ = Stratonovich_to_Ito(lambda t,x,theta: jnp.zeros(n*d),
+        b,sigma_diffusion,_ = Stratonovich_to_Ito(lambda t,x,theta: jnp.zeros(n*d),
                                lambda t,x,theta: Q12(x,theta))
     else:
         b = lambda t,x,theta: jnp.zeros(n*d)
-        sigma = lambda t,x,theta: Q12(x,theta)
-        
+        sigma_diffusion = lambda t,x,theta: Q12(x,theta)
+
     # simulate data 
     key = jax.random.PRNGKey(ds)
     key, subkey = jax.random.split(key)
@@ -77,8 +77,8 @@ def simulate_shapes(ds, dt, sigma, alpha, root, tree, rb=0, d=2, outputfolder=''
         _dts = jnp.array([0]); _dWs = jnp.array([0]); Xscirc = root.reshape(1,-1) # set variables for root 
         #children = [tree.children[0],tree.children[1]]
         dWs_children = [dtsdWsT(tree.children[i],subkeys[i], lambda ckey, _dts: dWs(n*d,ckey, _dts)) for i in range(len(tree.children))]
-        stree = [_dts, _dWs, Xscirc, [simulate_tree(Xscirc[-1], b, sigma, theta_true, dtsdWs_child) for dtsdWs_child in dWs_children]]
+        stree = [_dts, _dWs, Xscirc, [simulate_tree(Xscirc[-1], b, sigma_diffusion, theta_true, dtsdWs_child) for dtsdWs_child in dWs_children]]
     else:
-        stree = simulate_tree(root, b, sigma, theta_true, dtsdWsT(tree,subkey, lambda ckey, _dts: dWs(n*d,ckey, _dts)))
+        stree = simulate_tree(root, b, sigma_diffusion, theta_true, dtsdWsT(tree,subkey, lambda ckey, _dts: dWs(n*d,ckey, _dts)))
 
     return(stree)
