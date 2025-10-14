@@ -11,6 +11,14 @@ data/hercules_forewing_n=20.csv
 _* 
 results/
 experiments/comparison/discarded/*
+experiments/figures
+experiments/procrustes/simulations/*
+experiments/procrustes/discarded/*
+experiments/trash/*
+
+# ingore in src
+src/physhapes/TODO
+.DS_Store
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
