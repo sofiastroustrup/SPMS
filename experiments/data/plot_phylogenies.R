@@ -1,7 +1,0 @@
-library(ape)
-library(ggtree)
-library(here)
-tree <- read.tree(here("experiments", "data", "chazot_subtree.nw"))
-pdf(here("experiments", "data", "chazot_subtree.pdf"), width=8, height=6)
-plot(tree, show.node.label = FALSE, root.edge = TRUE,type="cladogram", offset=3, show.tip.label=FALSE)
-dev.off()

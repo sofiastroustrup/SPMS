@@ -1,28 +1,33 @@
 #wand folders
 wandb
 
+# ignore pdf files and folder starting with underscore
+_* 
+*.pdf
+
 # only share generic trees 
 data/chazot*
 data/forewing_data_male.csv
 data/Morpho_forewing_procCoor.txt
 data/hercules_forewing_n=20.csv
+follow_up_experiments/data/*
 
-# folders and files starting with underscore
-_* 
-*.pdf
-results/
-experiments/comparison/discarded/*
-experiments/figures
-experiments/procrustes/simulations/*
-experiments/procrustes/discarded/*
-experiments/trash/*
-experiments/comparison/hercules_root_sigma=0.4_alpha=0.03_dt=0.05/*
-experiments/sigma-experiment/sigma=*
-experiments/sigma-experiment/dt=0.01/
-experiments/sigma-experiment/discarded/*
-experiments/procrustes/screen*.sh
-experiments/comparison/screen*.sh
-experiments/procrustes/unit_root/*
+# ignore folders in follow_up_experiments
+*/figures
+*/trash/*
+*/comparison/hercules_root_sigma=0.4_alpha=0.03_dt=0.05/*
+*/comparison/screen*.sh
+*/comparison/discarded/*
+*/sigma-experiment/sigma=*
+*/sigma-experiment/dt=0.01/
+*/sigma-experiment/discarded/*
+*/procrustes/screen*.sh
+*/procrustes/unit_root/*
+*/procrustes/simulations/*
+*/procrustes/discarded/*
+
+# ignore following folders in original_experiments
+*/results/
 
 # ingore in src
 src/physhapes/TODO
