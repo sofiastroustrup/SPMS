@@ -9,3 +9,5 @@ Scripts:
 To simulate data we run: simulate_data.ipynb
 To procrustes align the simulated data we run: procrustes.R
 To infer the posterior distribution we run: infer_posterior.ipynb
+To evaluate convergence we run: analyze_results.ipynb 
+To plot histograms we run: evaluate_bias.ipynb
