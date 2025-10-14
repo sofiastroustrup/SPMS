@@ -15,6 +15,8 @@ experiments/figures
 experiments/procrustes/simulations/*
 experiments/procrustes/discarded/*
 experiments/trash/*
+experiments/comparison/hercules_root_sigma=0.4_alpha=0.03_dt=0.05/*
+
 
 # ingore in src
 src/physhapes/TODO
