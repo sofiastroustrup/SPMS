@@ -6,7 +6,7 @@ library(stringr)
 library(reticulate)
 
 d = 2
-folder ="unit_root_sigma=0.5_alpha=0.005_dt=0.05"
+folder ="simulations/sigma=0.3_alpha=0.005_dt=0.05"
 #n_species = 5
 #n = 20 
 #folder ="exp_2_sigma=0.7_alpha=0.025_dt=0.05/seed=3713700383"
