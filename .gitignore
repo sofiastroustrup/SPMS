@@ -4,13 +4,12 @@ wandb
 # ignore pdf files and folder starting with underscore
 _* 
 *.pdf
+experiments/figures
+*/.DS_Store
 
 # only share generic trees 
-data/chazot*
-data/forewing_data_male.csv
-data/Morpho_forewing_procCoor.txt
-data/hercules_forewing_n=20.csv
-follow_up_experiments/data/*
+
+#follow_up_experiments/data/*
 
 # ignore folders in follow_up_experiments
 experiments/follow_up_experiments/figures
@@ -28,6 +27,11 @@ experiments/follow_up_experiments/procrustes/discarded/*
 
 # ignore following folders in original_experiments
 experiments/original_experiments/results/
+experiments/original_experiments/data/chazot*
+experiments/original_experiments/data/forewing_data_male.csv
+experiments/original_experiments/data/Morpho_forewing_procCoor.txt
+experiments/original_experiments/data/hercules_forewing_n=20.csv
+
 
 # ingore in src
 src/physhapes/TODO
