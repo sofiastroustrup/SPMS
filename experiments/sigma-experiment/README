@@ -1,0 +1,11 @@
+Code developed for simulation study comparing the sigma parameter.
+
+Setup
+
+Simulate data on star phylogeny (100 tips, T=1)
+Root shape: butterfly forewing and butterfly hindwing 
+Sigmas: 0.1, 0.2, 0.3, … , 1.5
+Alpha = 0.01
+dt = 0.01
+20 data sets per setting
+Compute integration measure from:  An effect size for comparing the strength of morphological integration across studies
