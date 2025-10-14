@@ -42,9 +42,9 @@ for (i in 1:n_traits) {
   names(trait_vector) <- tree$tip.label
   
   # Perform ancestral state reconstruction
-  anc_result <- fastAnc(tree, trait_vector, model="BM", CI=TRUE)
+  anc_result <- fastAnc(tree, trait_vector, model="BM", CI=TRUE, vars=TRUE)
   write.csv(anc_result$CI95, col.names=FALSE,file=here("experiments", "comparison", folder, sim_seed, paste0("fastAnc/95%_conf_trait",i ,".csv")))
-
+  write.csv(anc_result$var, col.names=FALSE,file=here("experiments", "comparison", folder, sim_seed, paste0("fastAnc/vars_trait",i ,".csv")))
   # Store the results in the matrix
   anc_matrix[i,] <- anc_result$ace
   #CI[[i]] <- anc_result$CI  # Store confidence intervals for each trait
