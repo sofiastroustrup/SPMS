@@ -19,6 +19,7 @@ experiments/trash/*
 # ingore in src
 src/physhapes/TODO
 .DS_Store
+.Rhistory
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
