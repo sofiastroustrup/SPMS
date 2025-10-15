@@ -1,1 +1,3 @@
-All code used to generate the experiments in the first version of the paper.  
+In this folder we include all code and files neccesary to reproduce the experiments described in the section "Results" subsection "MCMC Algorithm Yields Well Calibrated Credible Sets", "Root Estimation", "Probabilistic Ancestral Reconstruction" and "Analysis of Morpho Butterflies". 
+
+All base functionalities are given in the folder "bridge_sampling". 
