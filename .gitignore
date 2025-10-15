@@ -24,13 +24,14 @@ experiments/follow_up_experiments/procrustes/screen*.sh
 experiments/follow_up_experiments/procrustes/unit_root/*
 experiments/follow_up_experiments/procrustes/simulations/*
 experiments/follow_up_experiments/procrustes/discarded/*
+experiments/follow_up_experiments/data/topologies_for_plotting/*
 
 # ignore following folders in original_experiments
 experiments/original_experiments/results/
-experiments/original_experiments/data/chazot*
+#experiments/original_experiments/data/chazot*
 experiments/original_experiments/data/forewing_data_male.csv
 experiments/original_experiments/data/Morpho_forewing_procCoor.txt
-experiments/original_experiments/data/hercules_forewing_n=20.csv
+#experiments/original_experiments/data/hercules_forewing_n=20.csv
 
 
 # ingore in src

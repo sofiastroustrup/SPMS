@@ -1,0 +1,3 @@
+In this folder we include code and data/files neccessary to reproduce the experiments presented in the section "Results" subsection "Shape Aware Model Yield Meaningful Uncertainty Estimates" and "sigma Parameter as a Measure of Biological Integration". In addition we also include code used to generate the experiment presented as supplementary material in Section 8, "Effect of Procrustes Alignement".  
+
+All basic functionalities for running the code are given in the src/physhapes folder and can be installed as a python package by going to the root directory and running "pip install -e ."

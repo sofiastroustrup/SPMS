@@ -1,0 +1,5 @@
+In this folder we provide all the data used to run the follow up experiments. 
+
+File hercules_forewing.csv and hercules_forewing_n=20.csv are obtained from the public dataset available at: https://datadryad.org/dataset/doi:10.5061/dryad.2jm63xsq6 and created using the 0-dataprep.ipynb notebook in the "original_experiments" folder
+
+Phylogenies are obtained from the public dataset available at: https://datadryad.org/dataset/doi:10.5061/dryad.2jm63xsq6 and created using the 0-dataprep.ipynb notebook. 
