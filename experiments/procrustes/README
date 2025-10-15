@@ -1,5 +1,0 @@
-Folder in which we carry out an simulation study exploring the effect of Procrustes alignment on parameter estimates. 
-
-1- Simulate 20 data sets with dt=0.025, sigma=0.9 and with rb = 1 (we need to set the super root to the true simulation root in order to look at the effect of procrustes alignment alone)
-2- For each data set infer posterior with and without procrustes alignment 
-3- Compare estimated parameters with and without Procrustes alignment

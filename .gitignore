@@ -1,16 +1,42 @@
 #wand folders
 wandb
 
-# only share generic trees 
-data/chazot*
-data/forewing_data_male.csv
-data/Morpho_forewing_procCoor.txt
-data/hercules_forewing_n=20.csv
-
-# folders and files starting with underscore
+# ignore pdf files and folder starting with underscore
 _* 
-results/
-experiments/comparison/discarded/*
+*.pdf
+experiments/figures
+*/.DS_Store
+
+# only share generic trees 
+
+#follow_up_experiments/data/*
+
+# ignore folders in follow_up_experiments
+experiments/follow_up_experiments/figures
+experiments/follow_up_experiments/trash/*
+experiments/follow_up_experiments/comparison/hercules_root_sigma=0.4_alpha=0.03_dt=0.05/*
+experiments/follow_up_experiments/comparison/screen*.sh
+experiments/follow_up_experiments/comparison/discarded/*
+experiments/follow_up_experiments/sigma-experiment/sigma=*
+experiments/follow_up_experiments/sigma-experiment/dt=0.01/
+experiments/follow_up_experiments/sigma-experiment/discarded/*
+experiments/follow_up_experiments/procrustes/screen*.sh
+experiments/follow_up_experiments/procrustes/unit_root/*
+experiments/follow_up_experiments/procrustes/simulations/*
+experiments/follow_up_experiments/procrustes/discarded/*
+
+# ignore following folders in original_experiments
+experiments/original_experiments/results/
+experiments/original_experiments/data/chazot*
+experiments/original_experiments/data/forewing_data_male.csv
+experiments/original_experiments/data/Morpho_forewing_procCoor.txt
+experiments/original_experiments/data/hercules_forewing_n=20.csv
+
+
+# ingore in src
+src/physhapes/TODO
+.DS_Store
+.Rhistory
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
