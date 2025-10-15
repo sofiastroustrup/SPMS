@@ -1,6 +1,6 @@
 Folder in which we carry out an simulation study exploring the effect of Procrustes alignment on parameter estimates. 
 
-1- Simulate 20 data sets with dt=0.05, sigma=0.3 and alpha=0.005. As a root we use a simulated butterfly which have been procrustes aligned, such that its centroid size is 1.
+1- Simulate 20 data sets with dt=0.05, sigma=0.3 and alpha=0.005. As the root we use a simulated butterfly which have been procrustes aligned, such that its centroid size is 1.
 2- For each data set infer posterior with and without procrustes alignment 
 3- Compare estimated parameters with and without Procrustes alignment
 
