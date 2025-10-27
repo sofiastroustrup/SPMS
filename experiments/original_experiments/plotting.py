@@ -67,7 +67,7 @@ def plot_posterior(flat_trees, inneridx, outpath, flat_true_tree=False, sample_n
     # Determine the grid size
     grid_size = int(np.ceil(np.sqrt(n_nodes)))
     # Create subplots
-    fig, axes = plt.subplots(grid_size, grid_size, figsize=(20, 20), sharex=True, sharey=True)
+    fig, axes = plt.subplots(grid_size, grid_size, figsize=(20, 20), sharex=True, sharey=True, dpi=600)
     #fig.suptitle(f'Samples from posterior (every {sample_n}) for all innernodes', size=20)
     # Flatten the axes array for easy iteration
     axes = axes.flatten()
@@ -84,6 +84,8 @@ def plot_posterior(flat_trees, inneridx, outpath, flat_true_tree=False, sample_n
             tinode = np.concatenate((true_innernode, true_innernode[0:2]))  
             axes[i].plot(tinode[::2], tinode[1::2], '--.', color='black', label='True shape')
         axes[i].set_title(f'Node {idx}', size=20);
+        axes[i].set_xticklabels([])
+        axes[i].set_yticklabels([])
 
     # Hide any unused subplots
     for j in range(n_nodes, grid_size * grid_size):
