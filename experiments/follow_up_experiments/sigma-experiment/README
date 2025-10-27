@@ -9,4 +9,4 @@ We simulate 50 data sets per sigma.
 We simulate data using the script: simulate.ipynb
 
 2- For each dataset we compute Vrel using geomorph. 
-We compute Vrel and and plot Vrel for each data set usinf the script: Zobs_both.R
+We compute Vrel and and plot Vrel for each data set usinf the script: Vrel_both.R
