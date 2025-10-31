@@ -6,7 +6,7 @@ library(stringr)
 library(ggplot2)
 
 d = 2
-parent_folder = here("experiments", "sigma-experiment")
+parent_folder = here("experiments", "follow_up_experiments", "sigma-experiment")
 sigma_folders = list.dirs(parent_folder, recursive = FALSE, full.names = TRUE)
 
 integration_measures_list_procrustes <- list()
@@ -45,19 +45,19 @@ for (sigma_folder in sigma_folders) {
 
 # Prepare data for plotting
 integration_df_procrustes <- stack(integration_measures_list_procrustes)
-colnames(integration_df_procrustes) <- c("Z.obs", "sigma")
+colnames(integration_df_procrustes) <- c("Vrel", "sigma")
 integration_df_procrustes$method <- "Procrustes aligned"
 
 integration_df_noalign <- stack(integration_measures_list_noalign)
-colnames(integration_df_noalign) <- c("Z.obs", "sigma")
+colnames(integration_df_noalign) <- c("Vrel", "sigma")
 integration_df_noalign$method <- "No alignment"
 
 integration_df <- rbind(integration_df_procrustes, integration_df_noalign)
 #integration_df$sigma <- as.numeric(as.character(integration_df$sigma))
 
 # Plot
-pdf(file = here("experiments", "sigma-experiment", "integration_vs_sigma_vrel.pdf"), width = 20, height = 10)
-ggplot(integration_df, aes(x = sigma, y = Z.obs)) +
+pdf(file = here("experiments", "follow_up_experiments","sigma-experiment", "integration_vs_sigma_vrel.pdf"), width = 20, height = 10)
+ggplot(integration_df, aes(x = sigma, y = Vrel)) +
   geom_jitter(width = 0.05, alpha = 0.6, size = 2) +
   labs(
     x = expression(sigma),
