@@ -4,6 +4,7 @@ wandb
 # ignore pdf files and folder starting with underscore
 _* 
 *.pdf
+*.png
 experiments/figures
 */.DS_Store
 
