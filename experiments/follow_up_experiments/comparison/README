@@ -1,4 +1,4 @@
-In this folder we provide code for comparing ancestral reconstructions in geomorph and with MCMC. 
+In this folder we provide code for comparing ancestral reconstructions under BM and with the output of our MCMC. 
 
 1- We simulate data using simulate_data.ipynb
 2- We infer the posterior distribution using infer_posterior and run_mcmc.py
